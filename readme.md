@@ -14,4 +14,4 @@ var draw = SVG('id').size(1000,1000).panZoom()
 ```
 
 Thats it - no magic involved.  
-This plugin also works on mobile devices (at least on Android) as soo as needs [PR #661](https://github.com/svgdotjs/svg.js/pull/661) is pulled.
+This plugin also works on mobile devices (at least on Android) when used with svg.js v2.6 and above
