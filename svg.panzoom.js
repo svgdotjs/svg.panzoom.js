@@ -142,10 +142,22 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 			.transform(new SVG.Matrix()
 					.scale(zoomAmount, point.x, point.y))
 
-		if(animate) this.animate(animate.duration, animate.easing).viewbox(b)
-		else this.viewbox(b)
+		if(animate) {
+			this.animate(animate.duration, animate.easing)
+				.viewbox(b)
+				.after(this.fire.bind(this, 'zoom'))
+		} else {
+			this.viewbox(b)
+			this.fire('zoom')
+		}
+	},
 
-		this.fire('zoom')
+	zoomToOne: function(point, animate) {
+		this.zoom(this.zoomLevel(), point, animate)
+	},
+
+	zoomLevel: function() {
+		return this.bbox().width / this.viewbox().width
 	}
 
 })
