@@ -1,6 +1,8 @@
 (function() {
 
-var normalizeEvent = function(ev) {
+'use strict'
+
+var normalizeEvent = function normalizeEvent(ev) {
   if(!ev.touches) {
     ev.touches = [{clientX: ev.clientX, clientY: ev.clientY}]
   }
@@ -8,10 +10,17 @@ var normalizeEvent = function(ev) {
   return [].slice.call(ev.touches)
 }
 
-SVG.extend(SVG.Doc, SVG.Nested, {
+var getCenterPoint = function getCenterPoint(element) {
+  var size = element.node.getBoundingClientRect()
+  return element.point(size.width / 2,
+                       size.height/ 2)
+}
+
+SVG.extend(SVG.Doc, SVG.Nested, SVG.FX, {
 
   panZoom: function(options) {
     options = options || {}
+
     var zoomFactor = options.zoomFactor || 0.03
 
     var lastP, lastTouches, zoomInProgress = false, lastCall = +new Date()
@@ -37,6 +46,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       zoomInProgress = true
       SVG.on(document, 'touchmove', pinchZoom, this, {passive:false})
       SVG.on(document, 'touchend', pinchZoomStop, this, {passive:false})
+
+      //TODO: when to fire zoom?
+      this.fire('zoomStart')
     }
 
     var pinchZoomStop = function(ev) {
@@ -83,6 +95,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       this.viewbox(b)
 
       lastTouches = currentTouches
+
+      //TODO: when to fire zoom?
+      this.fire('zoomEnd')
     }
 
     var panStart = function(ev) {
@@ -137,31 +152,41 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
   },
 
-  zoom: function(zoomAmount, point, animate) {
-    var b = new SVG.Box(this.viewbox())
+  zoom: function(zoomlevel, point) {
+    var isAnimating = this instanceof SVG.FX
+    // get target in case of the fx module, otherwise reference this
+    var target = isAnimating ? this.target() : this
+
+    if(arguments.length === 0) return target.bbox().width / target.viewbox().width
+
+    if(point == null) point = getCenterPoint(target)
+
+    //TODO: when to fire zoom?		
+    target.fire('zoomStart')
+
+    var b = new SVG.Box(target.viewbox())
       .transform(new SVG.Matrix()
-          .scale(zoomAmount, point.x, point.y))
+          .scale(zoomlevel, point.x, point.y))
 
-    if(animate) {
-      this.animate(animate.duration, animate.easing)
-        .viewbox(b)
-        .after(this.fire.bind(this, 'zoom'))
-    } else {
-      this.viewbox(b)
-      this.fire('zoom')
-    }
+    this.viewbox(b)
+
+    //TODO: when to fire zoom?
+    if(isAnimating) this.after(target.fire.bind(target, 'zoomEnd'))
+    else target.fire('zoomEnd')
+
+    return this
   },
 
-  zoomToOne: function(point, animate) {
-    this.zoom(this.zoomLevel(), point, animate)
-  },
+  zoomToOne: function(point) {
+    // get target in case of the fx module, otherwise reference this
+    var target = this instanceof SVG.FX ? this.target() : this
 
-  zoomLevel: function() {
-    return this.bbox().width / this.viewbox().width
+    this.zoom(target.zoom(), point)
+
+    return this
   }
 
 })
 
 
 })()
-
