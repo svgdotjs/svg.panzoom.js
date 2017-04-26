@@ -14,14 +14,13 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     options = options || {}
     var zoomFactor = options.zoomFactor || 0.03
 
-    var lastP, lastTouches, zoomInProgress = false, lastCall = +new Date()
+    var lastP, lastTouches, zoomInProgress = false
 
     var wheelZoom = function(ev) {
       ev.preventDefault()
 
-      var zoomAmount = ev.deltaY/Math.abs(ev.deltaY) * zoomFactor + 1
-
-      var p = this.point(ev.clientX, ev.clientY)
+      var zoomAmount = this.zoom() - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
+        , p = this.point(ev.clientX, ev.clientY)
 
       this.zoom(zoomAmount, p)
     }
@@ -137,31 +136,40 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
   },
 
-  zoom: function(zoomAmount, point, animate) {
-    var b = new SVG.Box(this.viewbox())
-      .transform(new SVG.Matrix()
-          .scale(zoomAmount, point.x, point.y))
+  zoom: function(level, point) {
+    var style = window.getComputedStyle(this.node)
+      , width = parseFloat(style.getPropertyValue('width'))
+      , height = parseFloat(style.getPropertyValue('height'))
+      , v = this.viewbox()
+      , zoomX = width / v.width
+      , zoomY = height / v.height
+      , zoom = Math.min(zoomX, zoomY)
 
-    if(animate) {
-      this.animate(animate.duration, animate.easing)
-        .viewbox(b)
-        .after(this.fire.bind(this, 'zoom'))
-    } else {
-      this.viewbox(b)
-      this.fire('zoom')
+    if(level == null) {
+      return zoom
     }
+
+    var zoomAmount = (zoom / level)
+
+    point = point || new SVG.Point(width/2 / zoomX + v.x, height/2 / zoomY + v.y)
+    
+    var box = new SVG.Box(v)
+      .transform(new SVG.Matrix()
+        .scale(zoomAmount, point.x, point.y)
+      )
+
+    if(this.fire('zoom', {level: level, box: box, focus: point}).event().defaultPrevented)
+      return this
+
+    return this.viewbox(box)
   },
-
-  zoomToOne: function(point, animate) {
-    this.zoom(this.zoomLevel(), point, animate)
-  },
-
-  zoomLevel: function() {
-    return this.bbox().width / this.viewbox().width
-  }
-
 })
 
+SVG.extend(SVG.FX, {
+  zoom: function(level) {
+    return this.add('zoom', new SVG.Number(level))
+  }
+})
 
 })()
 
