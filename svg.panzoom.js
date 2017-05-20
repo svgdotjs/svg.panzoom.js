@@ -53,8 +53,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       ev.preventDefault()
       var currentTouches = normalizeEvent(ev)
 
-      var lastDelta = Math.sqrt((lastTouches[0].clientX - lastTouches[1].clientX)**2 + (lastTouches[0].clientY - lastTouches[1].clientY)**2)
-      var currentDelta = Math.sqrt((currentTouches[0].clientX - currentTouches[1].clientX)**2 + (currentTouches[0].clientY - currentTouches[1].clientY)**2)
+      var lastDelta = Math.sqrt( Math.pow(lastTouches[0].clientX - lastTouches[1].clientX, 2) + Math.pow(lastTouches[0].clientY - lastTouches[1].clientY, 2) )
+      var currentDelta = Math.sqrt( Math.pow(currentTouches[0].clientX - currentTouches[1].clientX, 2) + Math.pow(currentTouches[0].clientY - currentTouches[1].clientY, 2) )
 
       var zoomAmount = lastDelta/currentDelta
 
@@ -152,7 +152,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var zoomAmount = (zoom / level)
 
     point = point || new SVG.Point(width/2 / zoomX + v.x, height/2 / zoomY + v.y)
-    
+
     var box = new SVG.Box(v)
       .transform(new SVG.Matrix()
         .scale(zoomAmount, point.x, point.y)
