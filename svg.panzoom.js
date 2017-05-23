@@ -1,4 +1,5 @@
 (function() {
+'use strict'
 
 var normalizeEvent = function(ev) {
   if(!ev.touches) {
@@ -51,8 +52,10 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     var pinchZoom = function(ev) {
       ev.preventDefault()
+
       var currentTouches = normalizeEvent(ev)
 
+      // Distance Formula
       var lastDelta = Math.sqrt( Math.pow(lastTouches[0].clientX - lastTouches[1].clientX, 2) + Math.pow(lastTouches[0].clientY - lastTouches[1].clientY, 2) )
       var currentDelta = Math.sqrt( Math.pow(currentTouches[0].clientX - currentTouches[1].clientX, 2) + Math.pow(currentTouches[0].clientY - currentTouches[1].clientY, 2) )
 
@@ -71,7 +74,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       var p = this.point(currentFocus.x, currentFocus.y)
       var focusP = this.point(2*currentFocus.x-lastFocus.x, 2*currentFocus.y-lastFocus.y)
-      var b = new SVG.Box(this.viewbox()).transform(
+      var box = new SVG.Box(this.viewbox()).transform(
         new SVG.Matrix()
           .translate(p.x, p.y)
           .scale(zoomAmount, 0, 0)
@@ -79,9 +82,11 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       )
 
 
-      this.viewbox(b)
+      this.viewbox(box)
 
       lastTouches = currentTouches
+
+      this.fire('zoom', {box: box, focus: focusP})
     }
 
     var panStart = function(ev) {
@@ -115,6 +120,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     var panning = function(ev) {
       ev.preventDefault()
+
       var currentTouches = normalizeEvent(ev)
 
       var currentP = {x: currentTouches[0].clientX, y: currentTouches[0].clientY }
@@ -158,7 +164,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
         .scale(zoomAmount, point.x, point.y)
       )
 
-    if(this.fire('zoom', {level: level, box: box, focus: point}).event().defaultPrevented)
+    if(this.fire('zoom', {box: box, focus: point}).event().defaultPrevented)
       return this
 
     return this.viewbox(box)
@@ -166,10 +172,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 })
 
 SVG.extend(SVG.FX, {
-  zoom: function(level) {
-    return this.add('zoom', new SVG.Number(level))
+  zoom: function(level, point) {
+    return this.add('zoom', new SVG.Number(level), point)
   }
 })
 
 })()
-
