@@ -26,3 +26,15 @@ draw.zoom(1) // uses center of viewport by default
 Zooming fires a `zoom` event which you can bind to.
 It's possible to `preventDefault` this event.
 However, this event is _NOT_ fired when pinchzooming on mobile devices.
+
+| Event Name     | Argument Value   |
+| -------------- | ---------------- |
+| zoom           | `{ box, focus }` |
+| panStart       | `{ event }`      |
+| panEnd         | `{ event }`      |
+| pinchZoomStart | `{ event }`      |
+| pinchZoomEnd   | `{ event }`      |
+
+Where [`box`](http://svgjs.com/geometry/#svg-box) is the new viewport,
+[`focus`](http://svgjs.com/classes/#svg-point) is point of zoom
+and event` is the event that triggered the action.

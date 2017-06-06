@@ -1,9 +1,11 @@
+'use strict'
+
 var normalizeEvent = function(ev) {
   if(!ev.touches) {
     ev.touches = [{clientX: ev.clientX, clientY: ev.clientY}]
   }
 
-  return [].slice.call(ev.touches)
+  return ev.touches
 }
 
 SVG.extend(SVG.Doc, SVG.Nested, {
@@ -33,7 +35,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
         return
 
       this.off('touchstart', pinchZoomStart)
-        
+
       zoomInProgress = true
       SVG.on(document, 'touchmove', pinchZoom, this, {passive:false})
       SVG.on(document, 'touchend', pinchZoomStop, this, {passive:false})
@@ -42,6 +44,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var pinchZoomStop = function(ev) {
       ev.preventDefault()
       zoomInProgress = false
+
+      this.fire('pinchZoomEnd', {event: ev})
 
       SVG.off(document,'touchmove', pinchZoom)
       SVG.off(document,'touchend', pinchZoomStop)
@@ -101,6 +105,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       if(zoomInProgress) return
 
+      this.fire('panStart', {event: ev})
+
       lastP = {x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
       SVG.on(document, 'mousemove', panning, this, {passive:false})
@@ -109,6 +115,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     var panStop = function(ev) {
       ev.preventDefault()
+
+      this.fire('panEnd', {event: ev})
 
       SVG.off(document,'mousemove', panning)
       SVG.off(document,'mouseup', panStop)
