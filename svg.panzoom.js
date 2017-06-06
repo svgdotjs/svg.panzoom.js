@@ -81,7 +81,6 @@ SVG.extend(SVG.Doc, SVG.Nested, {
           .translate(-focusP.x, -focusP.y)
       )
 
-
       this.viewbox(box)
 
       lastTouches = currentTouches
@@ -93,7 +92,6 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       ev.preventDefault()
 
       this.off('mousedown', panStart)
-      this.off('touchstart', panStart)
 
       lastTouches = normalizeEvent(ev)
 
@@ -102,20 +100,15 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       lastP = {x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
       SVG.on(document, 'mousemove', panning, this, {passive:false})
-      SVG.on(document, 'touchmove', panning, this, {passive:false})
       SVG.on(document, 'mouseup', panStop, this, {passive:false})
-      SVG.on(document, 'touchend', panStop, this, {passive:false})
     }
 
     var panStop = function(ev) {
       ev.preventDefault()
 
       SVG.off(document,'mousemove', panning)
-      SVG.off(document,'touchmove', panning)
       SVG.off(document,'mouseup', panStop)
-      SVG.off(document,'touchend', panStop)
       this.on('mousedown', panStart)
-      this.on('touchstart', panStart)
     }
 
     var panning = function(ev) {
@@ -136,7 +129,6 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     this.on('wheel', wheelZoom)
     this.on('touchstart', pinchZoomStart, this, {passive:false})
     this.on('mousedown', panStart, this, {passive:false})
-    this.on('touchstart', panStart, this, {passive:false})
 
     return this
 
