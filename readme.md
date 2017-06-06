@@ -13,5 +13,16 @@ npm install svg.panzoom.js
 var draw = SVG('id').size(1000,1000).panZoom()
 ```
 
-Thats it - no magic involved.  
-This plugin also works on mobile devices (at least on Android) when used with svg.js v2.6 and above
+The plugin also adds a zoom function which you can use and animate:
+
+```js
+draw.zoom(1) // uses center of viewport by default
+    .animate()
+    .zoom(2, {x:100, y:100}) // zoom into specified point
+```
+
+## Events
+
+Zooming fires a `zoom` event which you can bind to.
+It's possible to `preventDefault` this event.
+However, this event is _NOT_ fired when pinchzooming on mobile devices.

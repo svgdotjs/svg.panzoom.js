@@ -1,5 +1,13 @@
-(function() {
-'use strict'
+/*!
+* svg.panzoom.js - A plugin for svg.js that enables panzoom for viewport elements
+* @version 1.0.0
+* https://github.com/svgdotjs/svg.panzoom.js#readme
+*
+* @copyright Ulrich-Matthias Schäfer
+* @license MIT
+*/;
+;(function() {
+"use strict";
 
 var normalizeEvent = function(ev) {
   if(!ev.touches) {
@@ -29,10 +37,13 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var pinchZoomStart = function(ev) {
       lastTouches = normalizeEvent(ev)
 
-      if(lastTouches.length < 2 || zoomInProgress) return
+      if(lastTouches.length < 2) return
       ev.preventDefault()
 
-      panStop.call(this, ev)
+      if(this.fire('pinchZoomStart', {event: ev}).event().defaultPrevented)
+        return
+
+      this.off('touchstart', pinchZoomStart)
 
       zoomInProgress = true
       SVG.on(document, 'touchmove', pinchZoom, this, {passive:false})
@@ -46,8 +57,6 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       SVG.off(document,'touchmove', pinchZoom)
       SVG.off(document,'touchend', pinchZoomStop)
       this.on('touchstart', pinchZoomStart)
-
-      if(ev.touches.length > 0) panStart.call(this, ev)
     }
 
     var pinchZoom = function(ev) {
@@ -56,8 +65,15 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       var currentTouches = normalizeEvent(ev)
 
       // Distance Formula
-      var lastDelta = Math.sqrt( Math.pow(lastTouches[0].clientX - lastTouches[1].clientX, 2) + Math.pow(lastTouches[0].clientY - lastTouches[1].clientY, 2) )
-      var currentDelta = Math.sqrt( Math.pow(currentTouches[0].clientX - currentTouches[1].clientX, 2) + Math.pow(currentTouches[0].clientY - currentTouches[1].clientY, 2) )
+      var lastDelta = Math.sqrt(
+        Math.pow(lastTouches[0].clientX - lastTouches[1].clientX, 2) +
+        Math.pow(lastTouches[0].clientY - lastTouches[1].clientY, 2)
+      )
+
+      var currentDelta = Math.sqrt(
+        Math.pow(currentTouches[0].clientX - currentTouches[1].clientX, 2) +
+        Math.pow(currentTouches[0].clientY - currentTouches[1].clientY, 2)
+      )
 
       var zoomAmount = lastDelta/currentDelta
 
@@ -70,7 +86,6 @@ SVG.extend(SVG.Doc, SVG.Nested, {
         x: lastTouches[0].clientX + 0.5 * (lastTouches[1].clientX - lastTouches[0].clientX),
         y: lastTouches[0].clientY + 0.5 * (lastTouches[1].clientY - lastTouches[0].clientY)
       }
-
 
       var p = this.point(currentFocus.x, currentFocus.y)
       var focusP = this.point(2*currentFocus.x-lastFocus.x, 2*currentFocus.y-lastFocus.y)
@@ -128,7 +143,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     this.on('wheel', wheelZoom)
     this.on('touchstart', pinchZoomStart, this, {passive:false})
-    this.on('mousedown', panStart, this, {passive:false})
+    this.on('mousedown', panStart, this)
 
     return this
 
@@ -160,7 +175,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       return this
 
     return this.viewbox(box)
-  },
+  }
 })
 
 SVG.extend(SVG.FX, {
@@ -168,5 +183,4 @@ SVG.extend(SVG.FX, {
     return this.add('zoom', new SVG.Number(level), point)
   }
 })
-
-})()
+}());
