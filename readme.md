@@ -28,7 +28,7 @@ draw.zoom(1) // uses center of viewport by default
 
 ## API
 
-`svg.panzoom.js` adds the `.zoom()` method to all [viewbox][¹] elements.
+`svg.panzoom.js` adds the `.zoom()` method to all viewbox elements[¹](#viewbox-elements).
 
 - `zoom()` - returns current zoom level
 - `zoom(Number)` - will zoom in or out depending if the Number is greater or less than the current zoom level
@@ -42,12 +42,11 @@ draw.zoom(1) // uses center of viewport by default
 | `zoom(Number, {x,y})`              | element      |
 | `zoom(Number, new SVG.Point(x,y))` | element      |
 
-[¹]: #viewbox-elements
-
 ### viewbox elements
 
 - [SVG.Doc](http://svgjs.com/parents/#svg-doc)
 - [SVG.Nested](http://svgjs.com/parents/#svg-nested)
+
 
 ## Events
 
@@ -61,13 +60,13 @@ a zoom. This usually doesn't happen on mobile devices, in which case
 Events fired from SVG.js are [`CustomEvent`s](http://devdocs.io/dom/customevent),
 so the arguments passed from svg.panzoom.js are in in the `.detail` property.
 
-| Event Name     | Argument Value   | preventDefault support |
-| -------------- | ---------------- | ---------------------- |
+| Event Name     | Argument Value          | preventDefault support |
+| -------------- | ----------------------- | ---------------------- |
 | zoom           | `{ box, focus, level }` | YES                    |
-| panStart       | `{ event }`      | NO                     |
-| panEnd         | `{ event }`      | NO                     |
-| pinchZoomStart | `{ event }`      | YES                    |
-| pinchZoomEnd   | `{ event }`      | NO                     |
+| panStart       | `{ event }`             | NO                     |
+| panEnd         | `{ event }`             | NO                     |
+| pinchZoomStart | `{ event }`             | YES                    |
+| pinchZoomEnd   | `{ event }`             | NO                     |
 
 Where [`box`](http://svgjs.com/geometry/#svg-box) is the new viewport,
 [`focus`](http://svgjs.com/classes/#svg-point) is point of zoom
