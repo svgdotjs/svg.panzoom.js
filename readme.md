@@ -28,7 +28,7 @@ draw.zoom(1) // uses center of viewport by default
 
 ## API
 
-`svg.panzoom.js` adds the `.zoom()` method to the element `.panZoom()` is called on.
+`svg.panzoom.js` adds the `.zoom()` method to all [viewbox][¹] elements.
 
 - `zoom()` - returns current zoom level
 - `zoom(Number)` - will zoom in or out depending if the Number is greater or less than the current zoom level
@@ -42,6 +42,12 @@ draw.zoom(1) // uses center of viewport by default
 | `zoom(Number, {x,y})`              | element      |
 | `zoom(Number, new SVG.Point(x,y))` | element      |
 
+[¹]: #viewbox-elements
+
+### viewbox elements
+
+- [SVG.Doc](http://svgjs.com/parents/#svg-doc)
+- [SVG.Nested](http://svgjs.com/parents/#svg-nested)
 
 ## Events
 
