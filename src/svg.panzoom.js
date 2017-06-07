@@ -89,11 +89,10 @@ SVG.extend(SVG.Doc, SVG.Nested, {
           .translate(-focusP.x, -focusP.y)
       )
 
-      this.viewbox(box)
+      if(this.fire('zoom', {box: box, focus: focusP, level: currentDelta}).event().defaultPrevented)
+        this.viewbox(box)
 
       lastTouches = currentTouches
-
-      this.fire('zoom', {box: box, focus: focusP})
     }
 
     var panStart = function(ev) {
@@ -143,7 +142,6 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     this.on('mousedown', panStart, this)
 
     return this
-
   },
 
   zoom: function(level, point) {
@@ -168,7 +166,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
         .scale(zoomAmount, point.x, point.y)
       )
 
-    if(this.fire('zoom', {box: box, focus: point}).event().defaultPrevented)
+    if(this.fire('zoom', {box: box, focus: point, level: level}).event().defaultPrevented)
       return this
 
     return this.viewbox(box)

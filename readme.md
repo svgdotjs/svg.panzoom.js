@@ -63,7 +63,7 @@ so the arguments passed from svg.panzoom.js are in in the `.detail` property.
 
 | Event Name     | Argument Value   | preventDefault support |
 | -------------- | ---------------- | ---------------------- |
-| zoom           | `{ box, focus }` | YES                    |
+| zoom           | `{ box, focus, level }` | YES                    |
 | panStart       | `{ event }`      | NO                     |
 | panEnd         | `{ event }`      | NO                     |
 | pinchZoomStart | `{ event }`      | YES                    |
