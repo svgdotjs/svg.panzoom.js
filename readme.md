@@ -52,6 +52,9 @@ to actions and in some cases stop an action via `preventDefault()`.
 a zoom. This usually doesn't happen on mobile devices, in which case
 `pinchZoomStart` is fired when a zoom happens.
 
+Events fired from SVG.js are [`CustomEvent`s](http://devdocs.io/dom/customevent),
+so the arguments passed from svg.panzoom.js are in in the `.detail` property.
+
 | Event Name     | Argument Value   | preventDefault support |
 | -------------- | ---------------- | ---------------------- |
 | zoom           | `{ box, focus }` | YES                    |
@@ -68,8 +71,8 @@ An example of stopping a pan-zoom action:
 
 ```js
 var draw = SVG('id').size(1000,1000).panZoom()
-draw.on('pinchZoomStart', function(arg) {
-    arg.event.preventDefault()
+draw.on('pinchZoomStart', function(ev) {
+    ev.preventDefault()
     ...
 })
 ```
