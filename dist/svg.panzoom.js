@@ -28,6 +28,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var wheelZoom = function(ev) {
       ev.preventDefault()
 
+      if(ev.deltaY == 0) return
+
       var zoomAmount = this.zoom() - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
         , p = this.point(ev.clientX, ev.clientY)
 
@@ -118,8 +120,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       lastP = {x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
-      SVG.on(document, 'mousemove', panning, this, {passive:false})
-      SVG.on(document, 'mouseup', panStop, this, {passive:false})
+      SVG.on(document, 'mousemove', panning, this)
+      SVG.on(document, 'mouseup', panStop, this)
     }
 
     var panStop = function(ev) {

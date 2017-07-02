@@ -109,8 +109,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       lastP = {x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
-      SVG.on(document, 'mousemove', panning, this, {passive:false})
-      SVG.on(document, 'mouseup', panStop, this, {passive:false})
+      SVG.on(document, 'mousemove', panning, this)
+      SVG.on(document, 'mouseup', panStop, this)
     }
 
     var panStop = function(ev) {
