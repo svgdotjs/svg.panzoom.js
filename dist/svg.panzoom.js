@@ -1,6 +1,6 @@
 /*!
 * svg.panzoom.js - A plugin for svg.js that enables panzoom for viewport elements
-* @version 1.0.0
+* @version 1.0.1
 * https://github.com/svgdotjs/svg.panzoom.js#readme
 *
 * @copyright Ulrich-Matthias Schäfer
