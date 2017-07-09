@@ -23,6 +23,14 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     options = options || {}
     var zoomFactor = options.zoomFactor || 0.03
 
+    var zoomMin = options.zoomMin || 0
+
+    var zoomMax = options.zoomMax || Number.MAX_VALUE
+
+    this.zoomMin = zoomMin;
+
+    this.zoomMax = zoomMax;
+
     var lastP, lastTouches, zoomInProgress = false
 
     var wheelZoom = function(ev) {
@@ -158,6 +166,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
   },
 
   zoom: function(level, point) {
+
+
     var style = window.getComputedStyle(this.node)
       , width = parseFloat(style.getPropertyValue('width'))
       , height = parseFloat(style.getPropertyValue('height'))
@@ -169,7 +179,12 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     if(level == null) {
       return zoom
     }
-
+    if(level >= this.zoomMax) {
+      level = this.zoomMax
+    }
+    if(level <= this.zoomMin) {
+      level = this.zoomMin
+    }
     var zoomAmount = (zoom / level)
 
     point = point || new SVG.Point(width/2 / zoomX + v.x, height/2 / zoomY + v.y)
