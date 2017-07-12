@@ -1,6 +1,6 @@
 {
   "name": "svg.panzoom.js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A plugin for svg.js that enables panzoom for viewport elements",
   "main": "svg.panzoom.js",
   "scripts": {
@@ -25,14 +25,14 @@
     "svg.js": "^2.6.2"
   },
   "devDependencies": {
-    "del": "^2.2.2",
+    "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-header": "^1.8.8",
     "gulp-iife": "^0.3.0",
     "gulp-rename": "^1.2.2",
     "gulp-standard": "^10.0.0",
     "gulp-trimlines": "^1.0.1",
-    "gulp-uglify": "^2.1.2",
+    "gulp-uglify": "^3.0.0",
     "gulp-wrap-iife": "0.0.1"
   }
 }

@@ -1,6 +1,6 @@
 /*!
 * svg.panzoom.js - A plugin for svg.js that enables panzoom for viewport elements
-* @version 1.1.0
+* @version 1.1.1
 * https://github.com/svgdotjs/svg.panzoom.js#readme
 *
 * @copyright Ulrich-Matthias Schäfer
@@ -27,9 +27,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     var zoomMax = options.zoomMax || Number.MAX_VALUE
 
-    this.zoomMin = zoomMin;
+    this.zoomMin = zoomMin
 
-    this.zoomMax = zoomMax;
+    this.zoomMax = zoomMax
 
     var lastP, lastTouches, zoomInProgress = false
 
@@ -179,12 +179,13 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     if(level == null) {
       return zoom
     }
-    if(level >= this.zoomMax) {
+    if(this.zoomMax && level >= this.zoomMax) {
       level = this.zoomMax
     }
-    if(level <= this.zoomMin) {
+    if(this.zoomMin && level <= this.zoomMin) {
       level = this.zoomMin
     }
+
     var zoomAmount = (zoom / level)
 
     point = point || new SVG.Point(width/2 / zoomX + v.x, height/2 / zoomY + v.y)
