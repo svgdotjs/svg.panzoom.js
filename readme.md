@@ -12,11 +12,17 @@ npm install svg.panzoom.js
 ```js
 var draw = SVG('id').size(1000,1000).panZoom()
 ```
-panZoom() now accepts optional min and max level of zooming by just passing {zoomMin: 0.5, zoomMax: 20} 
+
+panZoom() accepts optional min and max level of zooming by just passing {zoomMin: 0.5, zoomMax: 20}
 to panZoom(), like this:
 
 ```js
 var draw = SVG('id').size(1000,1000).panZoom({zoomMin: 0.5, zoomMax: 20})
+```
+Or at a later time by setting `zoomMin`/`zoomMax` directly on the element which is *panZoomed*.
+```js
+var draw = SVG('id').panZoom({zoomMax: 20})
+draw.zoomMin = 1
 ```
 
 
