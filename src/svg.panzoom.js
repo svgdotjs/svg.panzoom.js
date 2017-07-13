@@ -175,7 +175,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       level = this.zoomMin
     }
 
-    var zoomAmount = (zoom / level)
+    var zoomAmount = zoom / level
+    if(zoomAmount === Infinity) zoomAmount = Number.MIN_VALUE
 
     point = point || new SVG.Point(width/2 / zoomX + v.x, height/2 / zoomY + v.y)
 
