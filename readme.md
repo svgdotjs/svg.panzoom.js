@@ -10,27 +10,31 @@ npm install svg.panzoom.js
 ```
 
 ```js
+// enables panZoom
 var draw = SVG('id').size(1000,1000).panZoom()
+
+// zoom programatically
+draw.zoom(lvl, point)
 ```
 
-panZoom() accepts optional min and max level of zooming by just passing {zoomMin: 0.5, zoomMax: 20}
-to panZoom(), like this:
+You can configure `panZoom` by passing options to it.
+
+- zoomMin: Minimal zoom level
+- zoomMax: Maximal zoom level
+- zoomFactor: How much is zoomed by one mouse wheel step
+
+This could look like this:
 
 ```js
 var draw = SVG('id').size(1000,1000).panZoom({zoomMin: 0.5, zoomMax: 20})
 ```
-Or at a later time by setting `zoomMin`/`zoomMax` directly on the element which is *panZoomed*.
-```js
-var draw = SVG('id').panZoom({zoomMax: 20})
-draw.zoomMin = 1
-```
 
+Setting the min and max value will automatically restrict the zoom to the provided level.  
+However you are still able to change the zoom out of that bonds by calling `zoom(lvl)` programatically.
 
-The SVG element now support panning via mouse-down/mouse-move
-and zooming via the mouse wheel. On touch devices, pinch-zoom
-support allow you to pan and zoom in one gesture.
+On touchable devices a pinchZoom gesture is supported which is always unrestricted (for now)
 
-You can also animate zooming:
+Zooming is animatable, too:
 
 ```js
 draw.zoom(1) // uses center of viewport by default

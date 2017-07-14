@@ -11,14 +11,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
   panZoom: function(options) {
     options = options || {}
     var zoomFactor = options.zoomFactor || 0.03
-
     var zoomMin = options.zoomMin || 0
-
     var zoomMax = options.zoomMax || Number.MAX_VALUE
-
-    this.zoomMin = zoomMin
-
-    this.zoomMax = zoomMax
 
     var lastP, lastTouches, zoomInProgress = false
 
@@ -27,8 +21,15 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       if(ev.deltaY == 0) return
 
-      var zoomAmount = this.zoom() - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
+      var zoom = this.zoom()
+        , zoomAmount = zoom - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
         , p = this.point(ev.clientX, ev.clientY)
+
+      if(zoom > zoomMax)
+        zoomAmount = zoomMax
+
+      if(zoom < zoomMin)
+        zoomAmount = zoomMin
 
       this.zoom(zoomAmount, p)
     }
@@ -155,8 +156,6 @@ SVG.extend(SVG.Doc, SVG.Nested, {
   },
 
   zoom: function(level, point) {
-
-
     var style = window.getComputedStyle(this.node)
       , width = parseFloat(style.getPropertyValue('width'))
       , height = parseFloat(style.getPropertyValue('height'))
@@ -167,12 +166,6 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     if(level == null) {
       return zoom
-    }
-    if(this.zoomMax && level >= this.zoomMax) {
-      level = this.zoomMax
-    }
-    if(this.zoomMin && level <= this.zoomMin) {
-      level = this.zoomMin
     }
 
     var zoomAmount = zoom / level
