@@ -13,7 +13,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     // when called with false, disable panZoom
     if(options === false) return this
-  
+
     options = options || {}
     var zoomFactor = options.zoomFactor || 0.03
     var zoomMin = options.zoomMin || Number.MIN_VALUE
@@ -24,16 +24,16 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var wheelZoom = function(ev) {
       ev.preventDefault()
 
+      // touchpads can give ev.deltaY == 0, which skews the lvl calculation
       if(ev.deltaY == 0) return
 
-      var zoom = this.zoom()
-        , lvl = zoom - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
+      var lvl = this.zoom() - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
         , p = this.point(ev.clientX, ev.clientY)
 
-      if(zoom > zoomMax)
+      if(lvl > zoomMax)
         lvl = zoomMax
 
-      if(zoom < zoomMin)
+      if(lvl < zoomMin)
         lvl = zoomMin
 
       this.zoom(lvl, p)
