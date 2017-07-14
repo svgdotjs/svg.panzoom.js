@@ -20,6 +20,11 @@ var normalizeEvent = function(ev) {
 SVG.extend(SVG.Doc, SVG.Nested, {
 
   panZoom: function(options) {
+    this.off('.panZoom')
+
+    // when called with false, disable panZoom
+    if(options === false) return this
+
     options = options || {}
     var zoomFactor = options.zoomFactor || 0.03
     var zoomMin = options.zoomMin || Number.MIN_VALUE
@@ -57,8 +62,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       this.off('touchstart', pinchZoomStart)
 
       zoomInProgress = true
-      SVG.on(document, 'touchmove', pinchZoom, this, {passive:false})
-      SVG.on(document, 'touchend', pinchZoomStop, this, {passive:false})
+      SVG.on(document, 'touchmove.panZoom', pinchZoom, this, {passive:false})
+      SVG.on(document, 'touchend.panZoom', pinchZoomStop, this, {passive:false})
     }
 
     var pinchZoomStop = function(ev) {
@@ -67,9 +72,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       this.fire('pinchZoomEnd', {event: ev})
 
-      SVG.off(document,'touchmove', pinchZoom)
-      SVG.off(document,'touchend', pinchZoomStop)
-      this.on('touchstart', pinchZoomStart)
+      SVG.off(document,'touchmove.panZoom', pinchZoom)
+      SVG.off(document,'touchend.panZoom', pinchZoomStop)
+      this.on('touchstart.panZoom', pinchZoomStart)
     }
 
     var pinchZoom = function(ev) {
@@ -119,7 +124,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var panStart = function(ev) {
       ev.preventDefault()
 
-      this.off('mousedown', panStart)
+      this.off('mousedown.panZoom', panStart)
 
       lastTouches = normalizeEvent(ev)
 
@@ -129,8 +134,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       lastP = {x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
-      SVG.on(document, 'mousemove', panning, this)
-      SVG.on(document, 'mouseup', panStop, this)
+      SVG.on(document, 'mousemove.panZoom', panning, this)
+      SVG.on(document, 'mouseup.panZoom', panStop, this)
     }
 
     var panStop = function(ev) {
@@ -138,9 +143,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       this.fire('panEnd', {event: ev})
 
-      SVG.off(document,'mousemove', panning)
-      SVG.off(document,'mouseup', panStop)
-      this.on('mousedown', panStart)
+      SVG.off(document,'mousemove.panZoom', panning)
+      SVG.off(document,'mouseup.panZoom', panStop)
+      this.on('mousedown.panZoom', panStart)
     }
 
     var panning = function(ev) {
@@ -158,9 +163,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       lastP = currentP
     }
 
-    this.on('wheel', wheelZoom)
-    this.on('touchstart', pinchZoomStart, this, {passive:false})
-    this.on('mousedown', panStart, this)
+    this.on('wheel.panZoom', wheelZoom)
+    this.on('touchstart.panZoom', pinchZoomStart, this, {passive:false})
+    this.on('mousedown.panZoom', panStart, this)
 
     return this
 
