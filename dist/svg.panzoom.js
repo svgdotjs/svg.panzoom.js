@@ -22,7 +22,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
   panZoom: function(options) {
     options = options || {}
     var zoomFactor = options.zoomFactor || 0.03
-    var zoomMin = options.zoomMin || 0
+    var zoomMin = options.zoomMin || Number.MIN_VALUE
     var zoomMax = options.zoomMax || Number.MAX_VALUE
 
     var lastP, lastTouches, zoomInProgress = false
@@ -198,7 +198,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
 SVG.extend(SVG.FX, {
   zoom: function(level, point) {
-    return this.add('zoom', new SVG.Number(level), point)
+    return this.add('zoom', [new SVG.Number(level)].concat(point || []))
   }
 })
 }());
