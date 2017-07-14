@@ -32,7 +32,7 @@ var draw = SVG('id').size(1000,1000).panZoom({zoomMin: 0.5, zoomMax: 20})
 Setting the min and max value will automatically restrict the zoom to the provided level.  
 However you are still able to change the zoom out of that bonds by calling `zoom(lvl)` programatically.
 
-On touchable devices a pinchZoom gesture is supported which is always unrestricted (for now)
+On touchable devices a pinchZoom gesture is supported. Min and max values also apply here.
 
 Zooming is animatable, too:
 

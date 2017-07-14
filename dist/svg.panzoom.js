@@ -38,16 +38,16 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       if(ev.deltaY == 0) return
 
       var zoom = this.zoom()
-        , zoomAmount = zoom - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
+        , lvl = zoom - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
         , p = this.point(ev.clientX, ev.clientY)
 
       if(zoom > zoomMax)
-        zoomAmount = zoomMax
+        lvl = zoomMax
 
       if(zoom < zoomMin)
-        zoomAmount = zoomMin
+        lvl = zoomMin
 
-      this.zoom(zoomAmount, p)
+      this.zoom(lvl, p)
     }
 
     var pinchZoomStart = function(ev) {
@@ -81,6 +81,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       ev.preventDefault()
 
       var currentTouches = normalizeEvent(ev)
+        , zoom = this.zoom()
 
       // Distance Formula
       var lastDelta = Math.sqrt(
@@ -94,6 +95,12 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       )
 
       var zoomAmount = lastDelta/currentDelta
+
+      if(zoom * zoomAmount > zoomMax)
+        zoomAmount = zoomMax / zoom
+
+      if(zoom * zoomAmount < zoomMin)
+        zoomAmount = zoomMin / zoom
 
       var currentFocus = {
         x: currentTouches[0].clientX + 0.5 * (currentTouches[1].clientX - currentTouches[0].clientX),
