@@ -12,6 +12,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     optionsIn = optionsIn || {}
 
     var options = {
+      doWheelZoom: true,
       zoomFactor: 0.03,
       zoomMin: 0,
       zoomMax: Number.MAX_VALUE
@@ -27,9 +28,13 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     var zoomMax = options.zoomMax
 
+    var doWheelZoom = options.doWheelZoom
+
     this.zoomMin = zoomMin
 
     this.zoomMax = zoomMax
+
+    this.doWheelZoom = doWheelZoom
 
     var lastP, lastTouches, zoomInProgress = false
 
@@ -157,7 +162,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       lastP = currentP
     }
 
-    this.on('wheel', wheelZoom)
+    if (doWheelZoom) this.on('wheel', wheelZoom)
     this.on('touchstart', pinchZoomStart, this, {passive:false})
     this.on('mousedown', panStart, this)
 
