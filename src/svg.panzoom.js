@@ -8,13 +8,24 @@ var normalizeEvent = function(ev) {
 
 SVG.extend(SVG.Doc, SVG.Nested, {
 
-  panZoom: function(options) {
-    options = options || {}
-    var zoomFactor = options.zoomFactor || 0.03
+  panZoom: function(optionsIn) {
+    optionsIn = optionsIn || {}
 
-    var zoomMin = options.zoomMin || 0
+    var options = {
+      zoomFactor: 0.03,
+      zoomMin: 0,
+      zoomMax: Number.MAX_VALUE
+    }
 
-    var zoomMax = options.zoomMax || Number.MAX_VALUE
+    for (var key in optionsIn) {
+      if (optionsIn.hasOwnProperty(key)) options[key] = optionsIn[key]
+    }
+
+    var zoomFactor = options.zoomFactor
+
+    var zoomMin = options.zoomMin
+
+    var zoomMax = options.zoomMax
 
     this.zoomMin = zoomMin
 
