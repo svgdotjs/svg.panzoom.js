@@ -48,7 +48,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       if(this.fire('pinchZoomStart', {event: ev}).event().defaultPrevented)
         return
 
-      this.off('touchstart', pinchZoomStart)
+      this.off('touchstart.panZoom', pinchZoomStart)
 
       zoomInProgress = true
       SVG.on(document, 'touchmove.panZoom', pinchZoom, this, {passive:false})

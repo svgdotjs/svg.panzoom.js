@@ -35,16 +35,16 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var wheelZoom = function(ev) {
       ev.preventDefault()
 
+      // touchpads can give ev.deltaY == 0, which skews the lvl calculation
       if(ev.deltaY == 0) return
 
-      var zoom = this.zoom()
-        , lvl = zoom - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
+      var lvl = this.zoom() - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
         , p = this.point(ev.clientX, ev.clientY)
 
-      if(zoom > zoomMax)
+      if(lvl > zoomMax)
         lvl = zoomMax
 
-      if(zoom < zoomMin)
+      if(lvl < zoomMin)
         lvl = zoomMin
 
       this.zoom(lvl, p)
@@ -59,7 +59,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       if(this.fire('pinchZoomStart', {event: ev}).event().defaultPrevented)
         return
 
-      this.off('touchstart', pinchZoomStart)
+      this.off('touchstart.panZoom', pinchZoomStart)
 
       zoomInProgress = true
       SVG.on(document, 'touchmove.panZoom', pinchZoom, this, {passive:false})
