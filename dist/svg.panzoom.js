@@ -96,11 +96,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       var zoomAmount = lastDelta/currentDelta
 
-      if(zoom * zoomAmount > zoomMax)
-        zoomAmount = zoomMax / zoom
-
-      if(zoom * zoomAmount < zoomMin)
-        zoomAmount = zoomMin / zoom
+      if((zoom < zoomMin && zoomAmount > 1) || (zoom > zoomMax && zoomAmount < 1))
+        zoomAmount = 1
 
       var currentFocus = {
         x: currentTouches[0].clientX + 0.5 * (currentTouches[1].clientX - currentTouches[0].clientX),
