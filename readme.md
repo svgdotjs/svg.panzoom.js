@@ -42,6 +42,7 @@ draw.zoom(1) // uses center of viewport by default
     .zoom(2, {x:100, y:100}) // zoom into specified point
 ```
 
+To disable `panZoom` or change its options just call it again with `false` or the new options.
 
 ## API
 
