@@ -20,28 +20,34 @@ var normalizeEvent = function(ev) {
 SVG.extend(SVG.Doc, SVG.Nested, {
 
   panZoom: function(options) {
+    this.off('.panZoom')
+
+    // when called with false, disable panZoom
+    if(options === false) return this
+
     options = options || {}
     var zoomFactor = options.zoomFactor || 0.03
-
-    var zoomMin = options.zoomMin || 0
-
+    var zoomMin = options.zoomMin || Number.MIN_VALUE
     var zoomMax = options.zoomMax || Number.MAX_VALUE
-
-    this.zoomMin = zoomMin
-
-    this.zoomMax = zoomMax
 
     var lastP, lastTouches, zoomInProgress = false
 
     var wheelZoom = function(ev) {
       ev.preventDefault()
 
+      // touchpads can give ev.deltaY == 0, which skews the lvl calculation
       if(ev.deltaY == 0) return
 
-      var zoomAmount = this.zoom() - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
+      var lvl = this.zoom() - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
         , p = this.point(ev.clientX, ev.clientY)
 
-      this.zoom(zoomAmount, p)
+      if(lvl > zoomMax)
+        lvl = zoomMax
+
+      if(lvl < zoomMin)
+        lvl = zoomMin
+
+      this.zoom(lvl, p)
     }
 
     var pinchZoomStart = function(ev) {
@@ -53,11 +59,11 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       if(this.fire('pinchZoomStart', {event: ev}).event().defaultPrevented)
         return
 
-      this.off('touchstart', pinchZoomStart)
+      this.off('touchstart.panZoom', pinchZoomStart)
 
       zoomInProgress = true
-      SVG.on(document, 'touchmove', pinchZoom, this, {passive:false})
-      SVG.on(document, 'touchend', pinchZoomStop, this, {passive:false})
+      SVG.on(document, 'touchmove.panZoom', pinchZoom, this, {passive:false})
+      SVG.on(document, 'touchend.panZoom', pinchZoomStop, this, {passive:false})
     }
 
     var pinchZoomStop = function(ev) {
@@ -66,15 +72,16 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       this.fire('pinchZoomEnd', {event: ev})
 
-      SVG.off(document,'touchmove', pinchZoom)
-      SVG.off(document,'touchend', pinchZoomStop)
-      this.on('touchstart', pinchZoomStart)
+      SVG.off(document,'touchmove.panZoom', pinchZoom)
+      SVG.off(document,'touchend.panZoom', pinchZoomStop)
+      this.on('touchstart.panZoom', pinchZoomStart)
     }
 
     var pinchZoom = function(ev) {
       ev.preventDefault()
 
       var currentTouches = normalizeEvent(ev)
+        , zoom = this.zoom()
 
       // Distance Formula
       var lastDelta = Math.sqrt(
@@ -88,6 +95,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       )
 
       var zoomAmount = lastDelta/currentDelta
+
+      if((zoom < zoomMin && zoomAmount > 1) || (zoom > zoomMax && zoomAmount < 1))
+        zoomAmount = 1
 
       var currentFocus = {
         x: currentTouches[0].clientX + 0.5 * (currentTouches[1].clientX - currentTouches[0].clientX),
@@ -118,7 +128,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var panStart = function(ev) {
       ev.preventDefault()
 
-      this.off('mousedown', panStart)
+      this.off('mousedown.panZoom', panStart)
 
       lastTouches = normalizeEvent(ev)
 
@@ -128,8 +138,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       lastP = {x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
-      SVG.on(document, 'mousemove', panning, this)
-      SVG.on(document, 'mouseup', panStop, this)
+      SVG.on(document, 'mousemove.panZoom', panning, this)
+      SVG.on(document, 'mouseup.panZoom', panStop, this)
     }
 
     var panStop = function(ev) {
@@ -137,9 +147,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
       this.fire('panEnd', {event: ev})
 
-      SVG.off(document,'mousemove', panning)
-      SVG.off(document,'mouseup', panStop)
-      this.on('mousedown', panStart)
+      SVG.off(document,'mousemove.panZoom', panning)
+      SVG.off(document,'mouseup.panZoom', panStop)
+      this.on('mousedown.panZoom', panStart)
     }
 
     var panning = function(ev) {
@@ -157,17 +167,15 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       lastP = currentP
     }
 
-    this.on('wheel', wheelZoom)
-    this.on('touchstart', pinchZoomStart, this, {passive:false})
-    this.on('mousedown', panStart, this)
+    this.on('wheel.panZoom', wheelZoom)
+    this.on('touchstart.panZoom', pinchZoomStart, this, {passive:false})
+    this.on('mousedown.panZoom', panStart, this)
 
     return this
 
   },
 
   zoom: function(level, point) {
-
-
     var style = window.getComputedStyle(this.node)
       , width = parseFloat(style.getPropertyValue('width'))
       , height = parseFloat(style.getPropertyValue('height'))
@@ -179,14 +187,9 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     if(level == null) {
       return zoom
     }
-    if(this.zoomMax && level >= this.zoomMax) {
-      level = this.zoomMax
-    }
-    if(this.zoomMin && level <= this.zoomMin) {
-      level = this.zoomMin
-    }
 
-    var zoomAmount = (zoom / level)
+    var zoomAmount = zoom / level
+    if(zoomAmount === Infinity) zoomAmount = Number.MIN_VALUE
 
     point = point || new SVG.Point(width/2 / zoomX + v.x, height/2 / zoomY + v.y)
 
@@ -204,7 +207,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
 SVG.extend(SVG.FX, {
   zoom: function(level, point) {
-    return this.add('zoom', new SVG.Number(level), point)
+    return this.add('zoom', [new SVG.Number(level)].concat(point || []))
   }
 })
 }());
