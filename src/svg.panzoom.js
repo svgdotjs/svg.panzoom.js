@@ -118,10 +118,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var panStart = function(ev) {
       ev.preventDefault()
 
-      if (ev.which != panMouse)
-      {
-        return;
-      }
+      if (ev.which != panMouse) return
 
       this.off('mousedown.panZoom', panStart)
 
