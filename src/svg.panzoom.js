@@ -107,7 +107,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
           .translate(-focusP.x, -focusP.y)
       )
 
-      this.viewbox(box)
+      this.setViewbox(box)
 
       lastTouches = currentTouches
 
@@ -152,7 +152,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
         , deltaP = [p2.x - p1.x, p2.y - p1.y]
         , box = new SVG.Box(this.viewbox()).transform(new SVG.Matrix().translate(deltaP[0], deltaP[1]))
 
-      this.viewbox(box)
+      this.setViewbox(box)
       lastP = currentP
     }
 
@@ -162,6 +162,12 @@ SVG.extend(SVG.Doc, SVG.Nested, {
 
     return this
 
+  },
+
+  setViewbox: function(box)
+  {
+     this.fire('viewbox', {box: box});
+     this.viewbox(box);
   },
 
   zoom: function(level, point) {
@@ -190,7 +196,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     if(this.fire('zoom', {box: box, focus: point}).event().defaultPrevented)
       return this
 
-    return this.viewbox(box)
+    return this.setViewbox(box)
   }
 })
 
