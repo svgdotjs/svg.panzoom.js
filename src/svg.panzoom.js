@@ -170,7 +170,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       , v = this.viewbox()
       , zoomX = width / v.width
       , zoomY = height / v.height
-      , zoom = Math.min(zoomX, zoomY);
+      , zoom = Math.min(zoomX, zoomY)
 
     if(level == null) {
       return zoom
