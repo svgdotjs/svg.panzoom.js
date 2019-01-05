@@ -165,13 +165,12 @@ SVG.extend(SVG.Doc, SVG.Nested, {
   },
 
   zoom: function(level, point) {
-    var style = window.getComputedStyle(this.node)
-      , width = parseFloat(style.getPropertyValue('width'))
-      , height = parseFloat(style.getPropertyValue('height'))
+    var width = this.node.clientWidth
+      , height = this.node.clientHeight
       , v = this.viewbox()
       , zoomX = width / v.width
       , zoomY = height / v.height
-      , zoom = Math.min(zoomX, zoomY)
+      , zoom = Math.min(zoomX, zoomY);
 
     if(level == null) {
       return zoom
