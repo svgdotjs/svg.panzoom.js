@@ -1,11 +1,16 @@
 {
-  "name": "svg.panzoom.js",
-  "version": "1.2.1",
+  "name": "@svgdotjs/svg.panzoom.js",
+  "version": "2.0.0",
   "description": "A plugin for svg.js that enables panzoom for viewport elements",
   "main": "dist/svg.panzoom.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "gulp"
+    "build": "npm run fix && npm run rollup",
+    "fix": "npx eslint ./src --fix",
+    "lint": "npx eslint ./src",
+    "rollup": "npx rollup -c .config/rollup.config.js",
+    "zip": "zip -j dist/svg.panzoom.js.zip -- LICENSE README.md dist/svg.panzoom.js dist/svg.panzoom.js.map dist/svg.panzoom.min.js dist/svg.panzoom.min.js.map",
+    "prepublishOnly": "rm -rf ./dist && npm run build",
+    "postpublish": "npm run zip"
   },
   "repository": {
     "type": "git",
@@ -22,17 +27,31 @@
   },
   "homepage": "https://github.com/svgdotjs/svg.panzoom.js#readme",
   "dependencies": {
-    "svg.js": "^2.6.6"
+    "@svgdotjs/svg.js": "^3.0.10"
   },
   "devDependencies": {
-    "del": "^3.0.0",
-    "gulp": "^3.9.1",
-    "gulp-header": "^2.0.5",
-    "gulp-iife": "^0.4.0",
-    "gulp-rename": "^1.4.0",
-    "gulp-standard": "^12.0.0",
-    "gulp-trimlines": "^1.0.1",
-    "gulp-uglify": "^3.0.0",
-    "gulp-wrap-iife": "0.0.1"
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-external-helpers": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/runtime": "^7.2.0",
+    "@babel/runtime-corejs2": "^7.2.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.10.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "rollup": "^0.68.1",
+    "rollup-plugin-babel": "^4.1.0",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-filesize": "^5.0.1",
+    "rollup-plugin-multi-entry": "^2.1.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-terser": "^3.0.0",
+    "rollup-plugin-uglify": "^6.0.0",
+    "rollup-plugin-uglify-es": "0.0.1"
   }
 }
