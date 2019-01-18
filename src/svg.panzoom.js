@@ -134,11 +134,11 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var panStop = function(ev) {
       ev.preventDefault()
 
-      this.fire('panEnd', {event: ev})
-
       SVG.off(document,'mousemove.panZoom', panning)
       SVG.off(document,'mouseup.panZoom', panStop)
       this.on('mousedown.panZoom', panStart)
+
+      this.fire('panEnd', {event: ev})
     }
 
     var panning = function(ev) {

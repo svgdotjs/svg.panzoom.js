@@ -1,6 +1,6 @@
 /*!
 * svg.panzoom.js - A plugin for svg.js that enables panzoom for viewport elements
-* @version 1.1.1
+* @version 1.2.1
 * https://github.com/svgdotjs/svg.panzoom.js#readme
 *
 * @copyright Ulrich-Matthias Schäfer
@@ -145,11 +145,11 @@ SVG.extend(SVG.Doc, SVG.Nested, {
     var panStop = function(ev) {
       ev.preventDefault()
 
-      this.fire('panEnd', {event: ev})
-
       SVG.off(document,'mousemove.panZoom', panning)
       SVG.off(document,'mouseup.panZoom', panStop)
       this.on('mousedown.panZoom', panStart)
+
+      this.fire('panEnd', {event: ev})
     }
 
     var panning = function(ev) {
@@ -176,9 +176,8 @@ SVG.extend(SVG.Doc, SVG.Nested, {
   },
 
   zoom: function(level, point) {
-    var style = window.getComputedStyle(this.node)
-      , width = parseFloat(style.getPropertyValue('width'))
-      , height = parseFloat(style.getPropertyValue('height'))
+    var width = this.node.clientWidth
+      , height = this.node.clientHeight
       , v = this.viewbox()
       , zoomX = width / v.width
       , zoomY = height / v.height
