@@ -172,6 +172,13 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       , zoomY = height / v.height
       , zoom = Math.min(zoomX, zoomY)
 
+    // Firefox does not support clientHeight and returns 0
+    if (!width && !height) {
+      var style = window.getComputedStyle(this.node)
+      width = parseFloat(style.getPropertyValue('width'))
+      height = parseFloat(style.getPropertyValue('height'))
+    }
+
     if(level == null) {
       return zoom
     }
