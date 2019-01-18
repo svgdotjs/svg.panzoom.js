@@ -1,9 +1,9 @@
-import { Doc, Nested, on, off, extend, Matrix, Box } from '@svgdotjs/svg.js'
+import { Svg, on, off, extend, Matrix, Box } from '@svgdotjs/svg.js'
 
 const normalizeEvent = (ev) =>
   ev.touches || [{ clientX: ev.clientX, clientY: ev.clientY }]
 
-extend(Doc, Nested, {
+extend(Svg, {
   panZoom (options) {
     this.off('.panZoom')
 
@@ -30,7 +30,7 @@ extend(Doc, Nested, {
 
       if (lvl < zoomMin) { lvl = zoomMin }
 
-      if (this.fire('zoom', { level: lvl, focus: p }).event().defaultPrevented) { return this }
+      if (this.dispatch('zoom', { level: lvl, focus: p }).defaultPrevented) { return this }
 
       this.zoom(lvl, p)
     }
@@ -41,7 +41,7 @@ extend(Doc, Nested, {
       if (lastTouches.length < 2) return
       ev.preventDefault()
 
-      if (this.fire('pinchZoomStart', { event: ev }).event().defaultPrevented) { return }
+      if (this.dispatch('pinchZoomStart', { event: ev }).defaultPrevented) { return }
 
       this.off('touchstart.panZoom', pinchZoomStart)
 
@@ -54,7 +54,7 @@ extend(Doc, Nested, {
       ev.preventDefault()
       zoomInProgress = false
 
-      this.fire('pinchZoomEnd', { event: ev })
+      this.dispatch('pinchZoomEnd', { event: ev })
 
       off(document, 'touchmove.panZoom', pinchZoom)
       off(document, 'touchend.panZoom', pinchZoomStop)
@@ -107,7 +107,7 @@ extend(Doc, Nested, {
 
       lastTouches = currentTouches
 
-      this.fire('zoom', { box: box, focus: focusP })
+      this.dispatch('zoom', { box: box, focus: focusP })
     }
 
     const panStart = function (ev) {
@@ -119,7 +119,7 @@ extend(Doc, Nested, {
 
       if (zoomInProgress) return
 
-      this.fire('panStart', { event: ev })
+      this.dispatch('panStart', { event: ev })
 
       lastP = { x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
@@ -134,7 +134,7 @@ extend(Doc, Nested, {
       off(document, 'mouseup.panZoom', panStop)
       this.on('mousedown.panZoom', panStart)
 
-      this.fire('panEnd', { event: ev })
+      this.dispatch('panEnd', { event: ev })
     }
 
     const panning = function (ev) {
