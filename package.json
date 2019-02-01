@@ -1,6 +1,6 @@
 {
   "name": "@svgdotjs/svg.panzoom.js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A plugin for svg.js that enables panzoom for viewport elements",
   "main": "dist/svg.panzoom.js",
   "unpkg": "dist/svg.panzoom.min.js",
