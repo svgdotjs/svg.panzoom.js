@@ -1,11 +1,11 @@
 {
   "name": "@svgdotjs/svg.panzoom.js",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A plugin for svg.js that enables panzoom for viewport elements",
   "main": "dist/svg.panzoom.js",
   "unpkg": "dist/svg.panzoom.min.js",
   "jsdelivr": "dist/svg.panzoom.min.js",
-  "browser": "dist/svg.panzoom.min.js",
+  "browser": "src/svg.panzoom.js",
   "module": "src/svg.panzoom.js",
   "scripts": {
     "build": "npm run fix && npm run rollup",
@@ -26,6 +26,7 @@
   ],
   "author": "Ulrich-Matthias Schäfer",
   "license": "MIT",
+  "typings": "./svg.panzoom.js.d.ts",
   "bugs": {
     "url": "https://github.com/svgdotjs/svg.panzoom.js/issues"
   },
