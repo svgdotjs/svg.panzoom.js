@@ -6,6 +6,6 @@ interface options {
 
 declare module "@svgdotjs/svg.js" {
   interface Svg {
-    panzoom(options?: options): this
+    panZoom(options?: options): this
   }
 }
