@@ -1,12 +1,17 @@
 {
   "name": "@svgdotjs/svg.panzoom.js",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A plugin for svg.js that enables panzoom for viewport elements",
   "main": "dist/svg.panzoom.js",
   "unpkg": "dist/svg.panzoom.min.js",
   "jsdelivr": "dist/svg.panzoom.min.js",
   "browser": "src/svg.panzoom.js",
   "module": "src/svg.panzoom.js",
+  "files": [
+    "/dist",
+    "/src",
+    "/svg.panzoom.js.d.ts"
+  ],
   "scripts": {
     "build": "npm run fix && npm run rollup",
     "fix": "npx eslint ./src --fix",
