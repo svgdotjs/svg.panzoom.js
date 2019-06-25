@@ -14,6 +14,9 @@ extend(Svg, {
     const zoomFactor = options.zoomFactor || 0.03
     const zoomMin = options.zoomMin || Number.MIN_VALUE
     const zoomMax = options.zoomMax || Number.MAX_VALUE
+    const wheelZoomClamp = options.wheelClamp || (svg, level, focus) => { return { level: level, focus: focus } }
+    const pinchZoomClamp = options.pinchClamp || (svg, box, focus) => { return { box: box, focus: focus } }
+    const panClamp = options.panClamp || (svg, box) => { return box }
 
     let lastP; let lastTouches; let zoomInProgress = false
 
@@ -30,9 +33,11 @@ extend(Svg, {
 
       if (lvl < zoomMin) { lvl = zoomMin }
 
-      if (this.dispatch('zoom', { level: lvl, focus: p }).defaultPrevented) { return this }
-
-      this.zoom(lvl, p)
+      let clamp = wheelZoomClamp(this, lvl, p);
+      
+      if (this.dispatch('zoom', clamp).defaultPrevented) { return this }
+      
+      this.zoom(clamp.level, clamp.focus)
     }
 
     const pinchZoomStart = function (ev) {
@@ -107,7 +112,9 @@ extend(Svg, {
 
       lastTouches = currentTouches
 
-      this.dispatch('zoom', { box: box, focus: focusP })
+      let clamp = pinchZoomClamp(this, box, focusP)
+      
+      this.dispatch('zoom', clamp)
     }
 
     const panStart = function (ev) {
@@ -152,7 +159,9 @@ extend(Svg, {
 
       const box = new Box(this.viewbox()).transform(new Matrix().translate(deltaP[0], deltaP[1]))
 
-      this.viewbox(box)
+      const clamp = panClamp(this, box)
+      
+      this.viewbox(clamp)
       lastP = currentP
     }
 
