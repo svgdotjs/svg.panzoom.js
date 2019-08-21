@@ -38,7 +38,7 @@ SVG.extend(SVG.Doc, SVG.Nested, {
       // touchpads can give ev.deltaY == 0, which skews the lvl calculation
       if(ev.deltaY == 0) return
 
-      var lvl = this.zoom() - zoomFactor * ev.deltaY/Math.abs(ev.deltaY)
+      var lvl = this.zoom() * (1.0 - ev.deltaY/Math.abs(ev.deltaY) * zoomFactor)
         , p = this.point(ev.clientX, ev.clientY)
 
       if(lvl > zoomMax)
