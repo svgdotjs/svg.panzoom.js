@@ -1,5 +1,19 @@
 import { Svg, on, off, extend, Matrix, Box } from '@svgdotjs/svg.js'
 
+const IS_SUPPORTED_TOUCH = (function hasTouchSupport() {
+  return (
+    'ontouchstart' in window || // touch events
+    (window.Modernizr && window.Modernizr.touch) || // modernizr
+    (navigator.msMaxTouchPoints || navigator.maxTouchPoints) > 2
+  ) // pointer events
+})()
+
+const EVENT_MAP = {
+  mousedown: IS_SUPPORTED_TOUCH ? 'touchstart' : 'mousedown',
+  mousemove: IS_SUPPORTED_TOUCH ? 'touchmove' : 'mousemove',
+  mouseup: IS_SUPPORTED_TOUCH ? 'touchend' : 'mouseup'
+}
+
 const normalizeEvent = (ev) =>
   ev.touches || [{ clientX: ev.clientX, clientY: ev.clientY }]
 
@@ -113,7 +127,7 @@ extend(Svg, {
     const panStart = function (ev) {
       ev.preventDefault()
 
-      this.off('mousedown.panZoom', panStart)
+      this.off(`${EVENT_MAP.mousedown}.panZoom`, panStart)
 
       lastTouches = normalizeEvent(ev)
 
@@ -123,16 +137,16 @@ extend(Svg, {
 
       lastP = { x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
-      on(document, 'mousemove.panZoom', panning, this)
-      on(document, 'mouseup.panZoom', panStop, this)
+      on(document, `${EVENT_MAP.mousemove}.panZoom`, panning, this)
+      on(document, `${EVENT_MAP.mouseup}.panZoom`, panStop, this)
     }
 
     const panStop = function (ev) {
       ev.preventDefault()
 
-      off(document, 'mousemove.panZoom', panning)
-      off(document, 'mouseup.panZoom', panStop)
-      this.on('mousedown.panZoom', panStart)
+      off(document, `${EVENT_MAP.mousemove}.panZoom`, panning)
+      off(document, `${EVENT_MAP.mouseup}.panZoom`, panStop)
+      this.on(`${EVENT_MAP.mousedown}.panZoom`, panStart)
 
       this.dispatch('panEnd', { event: ev })
     }
@@ -158,7 +172,7 @@ extend(Svg, {
 
     this.on('wheel.panZoom', wheelZoom)
     this.on('touchstart.panZoom', pinchZoomStart, this, { passive: false })
-    this.on('mousedown.panZoom', panStart, this)
+    this.on(`${EVENT_MAP.mousedown}.panZoom`, panStart, this)
 
     return this
   }
