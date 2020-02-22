@@ -25,7 +25,7 @@ extend(Svg, {
     if (options === false) return this
 
     options = options || {}
-    const zoomFactor = options.zoomFactor || 2
+    const zoomFactor = options.zoomFactor || 0.03
     const zoomMin = options.zoomMin || Number.MIN_VALUE
     const zoomMax = options.zoomMax || Number.MAX_VALUE
 
@@ -37,7 +37,7 @@ extend(Svg, {
       // touchpads can give ev.deltaY == 0, which skrews the lvl calculation
       if (ev.deltaY === 0) return
 
-      let lvl = Math.pow(1 + zoomFactor, (-1) * ev.deltaY / 100) * this.zoom()
+      let lvl = this.zoom() - zoomFactor * ev.deltaY / Math.abs(ev.deltaY)
       const p = this.point(ev.clientX, ev.clientY)
 
       if (lvl > zoomMax) { lvl = zoomMax }
@@ -112,9 +112,9 @@ extend(Svg, {
       const focusP = this.point(2 * currentFocus.x - lastFocus.x, 2 * currentFocus.y - lastFocus.y)
       const box = new Box(this.viewbox()).transform(
         new Matrix()
-          .translate(-focusP.x, -focusP.y)
           .translate(p.x, p.y)
           .scale(zoomAmount, 0, 0)
+          .translate(-focusP.x, -focusP.y)
       )
 
       this.viewbox(box)
