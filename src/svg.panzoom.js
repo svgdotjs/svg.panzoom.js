@@ -98,9 +98,9 @@ extend(Svg, {
       const focusP = this.point(2 * currentFocus.x - lastFocus.x, 2 * currentFocus.y - lastFocus.y)
       const box = new Box(this.viewbox()).transform(
         new Matrix()
+          .translate(-focusP.x, -focusP.y)
           .translate(p.x, p.y)
           .scale(zoomAmount, 0, 0)
-          .translate(-focusP.x, -focusP.y)
       )
 
       this.viewbox(box)
