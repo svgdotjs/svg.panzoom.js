@@ -2,7 +2,6 @@
 
 > A plugin for [svg.js](https://github.com/svgdotjs/svg.js) that enables panzoom for svg elements
 
-
 ## Getting started
 
 ```
@@ -26,8 +25,10 @@ To enable pan/zoom on an svg:
 
 ```js
 // enables panZoom
-var canvas = SVG().addTo('#id')
-  .size(1000,1000).panZoom()
+var canvas = SVG()
+  .addTo('#id')
+  .size(1000, 1000)
+  .panZoom()
 
 // zoom programatically
 canvas.zoom(lvl, point)
@@ -42,9 +43,10 @@ You can configure `panZoom` by passing options to it.
 This could look like this:
 
 ```js
-var canvas = SVG().addTo('#id')
-  .size(1000,1000)
-  .panZoom({zoomMin: 0.5, zoomMax: 20})
+var canvas = SVG()
+  .addTo('#id')
+  .size(1000, 1000)
+  .panZoom({ zoomMin: 0.5, zoomMax: 20 })
 ```
 
 Setting the min and max value will automatically restrict the zoom to the provided level.  
@@ -55,29 +57,31 @@ On touchable devices a pinchZoom gesture is supported. Min and max values also a
 Zooming is animatable, too:
 
 ```js
-canvas.zoom(1) // uses center of viewport by default
-    .animate()
-    .zoom(2, {x:100, y:100}) // zoom into specified point
+canvas
+  .zoom(1) // uses center of viewport by default
+  .animate()
+  .zoom(2, { x: 100, y: 100 }) // zoom into specified point
 ```
 
 To disable `panZoom` or change its options just call it again with `false` or the new options.
 
 ## Options
 
-You can override the default options by passing an object in to the ``.panZoom({options})`` call.
+You can override the default options by passing an object in to the `.panZoom({options})` call.
 
-| Option      | Default          | Description                                    |
-| ----------- | ---------------- | ---------------------------------------------- |
-| doPanning   | true             | Enable panning                                 |
-| doPinchZoom | true             | Enable pinch to zoom                           |
-| doWheelZoom | true             | Enable mouse wheel zoom                        |
-| zoomFactor  | 0.03             | How quickly to zoom when using ``doWheelZoom`` |
-| zoomMin     | 0                | The minimum zoom level                         |
-| zoomMax     | Number.MAX_VALUE | The maximum zoom level                         |
+| Option      | Default          | Description                                                                                                    |
+| ----------- | ---------------- | -------------------------------------------------------------------------------------------------------------- |
+| doPanning   | true             | Enable panning                                                                                                 |
+| doPinchZoom | true             | Enable pinch to zoom                                                                                           |
+| doWheelZoom | true             | Enable mouse wheel zoom                                                                                        |
+| panMouse    | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
+| zoomFactor  | 0.03             | How quickly to zoom when using `doWheelZoom`                                                                   |
+| zoomMin     | 0                | The minimum zoom level                                                                                         |
+| zoomMax     | Number.MAX_VALUE | The maximum zoom level                                                                                         |
 
 ### Example:
 
-``` js
+```js
 draw.panZoom({
   doWheelZoom: false,
   zoomMin: 0.5,
@@ -130,11 +134,13 @@ and event is the event that triggered the action.
 An example of stopping a pan-zoom action:
 
 ```js
-var canvas = SVG().addTo('#id')
-  .size(1000,1000).panZoom()
+var canvas = SVG()
+  .addTo('#id')
+  .size(1000, 1000)
+  .panZoom()
 
-canvas.on('pinchZoomStart', function(ev) {
-    ev.preventDefault()
-    // ...
+canvas.on('pinchZoomStart', function (ev) {
+  ev.preventDefault()
+  // ...
 })
 ```
