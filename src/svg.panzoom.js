@@ -17,6 +17,7 @@ extend(Svg, {
     const doWheelZoom = options.doWheelZoom ?? true
     const doPinchZoom = options.doPinchZoom ?? true
     const doPanning = options.doPanning ?? true
+    const panMouse = options.panMouse ?? 1
 
     let lastP
     let lastTouches
@@ -138,6 +139,8 @@ extend(Svg, {
 
     const panStart = function (ev) {
       ev.preventDefault()
+
+      if (ev.which != panMouse) return
 
       this.off('mousedown.panZoom', panStart)
 
