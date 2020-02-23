@@ -21,44 +21,61 @@ const headerLong = `/*!
 
 const headerShort = `/*! ${pkg.name} v${pkg.version} ${pkg.license}*/;`
 
-const getBabelConfig = (targets, corejs = false) => babel({
-  include: 'src/**',
-  runtimeHelpers: true,
-  babelrc: false,
-  presets: [['@babel/preset-env', {
-    modules: false,
-    targets: targets || pkg.browserslist,
-    //useBuiltIns: 'usage'
-  }]],
-  plugins: [['@babel/plugin-transform-runtime', {
-    corejs: corejs,
-    helpers: true,
-    useESModules: true
-  }]]
-})
+const getBabelConfig = (targets, corejs = false) =>
+  babel({
+    include: 'src/**',
+    runtimeHelpers: true,
+    babelrc: false,
+    presets: [
+      [
+        '@babel/preset-env',
+        {
+          modules: false,
+          targets: targets || pkg.browserslist
+          // useBuiltIns: 'usage'
+        }
+      ]
+    ],
+    plugins: [
+      ['@babel/plugin-proposal-optional-chaining'],
+      [
+        '@babel/plugin-proposal-nullish-coalescing-operator', {
+          loose: true
+        }
+      ],
+      [
+        '@babel/plugin-transform-runtime',
+        {
+          corejs: corejs,
+          helpers: true,
+          useESModules: true
+        }
+      ]
+    ]
+  })
 
 // When few of these get mangled nothing works anymore
 // We loose literally nothing by let these unmangled
-const classes = [
-
-]
+const classes = []
 
 const config = (node, min) => ({
   external: ['@svgdotjs/svg.js'],
   input: 'src/svg.panzoom.js',
   output: {
-    file: node ? './dist/svg.panzoom.node.js'
-      : min ? './dist/svg.panzoom.min.js'
+    file: node
+      ? './dist/svg.panzoom.node.js'
+      : min
+        ? './dist/svg.panzoom.min.js'
         : './dist/svg.panzoom.js',
     format: node ? 'cjs' : 'iife',
-    //name: 'SVG.Filter',
+    // name: 'SVG.Filter',
     sourcemap: true,
     banner: headerLong,
     // remove Object.freeze
     freeze: false,
     globals: {
-      '@svgdotjs/svg.js': 'SVG',
-    },
+      '@svgdotjs/svg.js': 'SVG'
+    }
   },
   treeshake: {
     // property getter have no sideeffects
@@ -66,17 +83,19 @@ const config = (node, min) => ({
   },
   plugins: [
     resolve(),
-    commonjs(),
     getBabelConfig(node && 'maintained node versions'),
+    commonjs(),
     filesize(),
-    !min ? {} : uglify({
-      mangle: {
-        reserved: classes
-      },
-      output: {
-        preamble: headerShort
-      }
-    })
+    !min
+      ? {}
+      : uglify({
+        mangle: {
+          reserved: classes
+        },
+        output: {
+          preamble: headerShort
+        }
+      })
   ]
 })
 

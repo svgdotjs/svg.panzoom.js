@@ -1,6 +1,6 @@
 import { Svg, on, off, extend, Matrix, Box } from '@svgdotjs/svg.js'
 
-const normalizeEvent = (ev) =>
+const normalizeEvent = ev =>
   ev.touches || [{ clientX: ev.clientX, clientY: ev.clientY }]
 
 extend(Svg, {
@@ -10,27 +10,38 @@ extend(Svg, {
     // when called with false, disable panZoom
     if (options === false) return this
 
-    options = options || {}
-    const zoomFactor = options.zoomFactor || 2
-    const zoomMin = options.zoomMin || Number.MIN_VALUE
-    const zoomMax = options.zoomMax || Number.MAX_VALUE
+    options = options ?? {}
+    const zoomFactor = options.zoomFactor ?? 2
+    const zoomMin = options.zoomMin ?? Number.MIN_VALUE
+    const zoomMax = options.zoomMax ?? Number.MAX_VALUE
+    const doWheelZoom = options.doWheelZoom ?? true
+    const doPinchZoom = options.doPinchZoom ?? true
+    const doPanning = options.doPanning ?? true
 
-    let lastP; let lastTouches; let zoomInProgress = false
+    let lastP
+    let lastTouches
+    let zoomInProgress = false
 
-    var wheelZoom = function (ev) {
+    const wheelZoom = function (ev) {
       ev.preventDefault()
 
       // touchpads can give ev.deltaY == 0, which skrews the lvl calculation
       if (ev.deltaY === 0) return
 
-      let lvl = Math.pow(1 + zoomFactor, (-1) * ev.deltaY / 100) * this.zoom()
+      let lvl = Math.pow(1 + zoomFactor, (-1 * ev.deltaY) / 100) * this.zoom()
       const p = this.point(ev.clientX, ev.clientY)
 
-      if (lvl > zoomMax) { lvl = zoomMax }
+      if (lvl > zoomMax) {
+        lvl = zoomMax
+      }
 
-      if (lvl < zoomMin) { lvl = zoomMin }
+      if (lvl < zoomMin) {
+        lvl = zoomMin
+      }
 
-      if (this.dispatch('zoom', { level: lvl, focus: p }).defaultPrevented) { return this }
+      if (this.dispatch('zoom', { level: lvl, focus: p }).defaultPrevented) {
+        return this
+      }
 
       this.zoom(lvl, p)
     }
@@ -41,7 +52,9 @@ extend(Svg, {
       if (lastTouches.length < 2) return
       ev.preventDefault()
 
-      if (this.dispatch('pinchZoomStart', { event: ev }).defaultPrevented) { return }
+      if (this.dispatch('pinchZoomStart', { event: ev }).defaultPrevented) {
+        return
+      }
 
       this.off('touchstart.panZoom', pinchZoomStart)
 
@@ -70,32 +83,46 @@ extend(Svg, {
       // Distance Formula
       const lastDelta = Math.sqrt(
         Math.pow(lastTouches[0].clientX - lastTouches[1].clientX, 2)
-        + Math.pow(lastTouches[0].clientY - lastTouches[1].clientY, 2)
+          + Math.pow(lastTouches[0].clientY - lastTouches[1].clientY, 2)
       )
 
       const currentDelta = Math.sqrt(
         Math.pow(currentTouches[0].clientX - currentTouches[1].clientX, 2)
-        + Math.pow(currentTouches[0].clientY - currentTouches[1].clientY, 2)
+          + Math.pow(currentTouches[0].clientY - currentTouches[1].clientY, 2)
       )
 
       let zoomAmount = lastDelta / currentDelta
 
-      if ((zoom < zoomMin && zoomAmount > 1) || (zoom > zoomMax && zoomAmount < 1)) {
+      if (
+        (zoom < zoomMin && zoomAmount > 1)
+        || (zoom > zoomMax && zoomAmount < 1)
+      ) {
         zoomAmount = 1
       }
 
       const currentFocus = {
-        x: currentTouches[0].clientX + 0.5 * (currentTouches[1].clientX - currentTouches[0].clientX),
-        y: currentTouches[0].clientY + 0.5 * (currentTouches[1].clientY - currentTouches[0].clientY)
+        x:
+          currentTouches[0].clientX
+          + 0.5 * (currentTouches[1].clientX - currentTouches[0].clientX),
+        y:
+          currentTouches[0].clientY
+          + 0.5 * (currentTouches[1].clientY - currentTouches[0].clientY)
       }
 
       const lastFocus = {
-        x: lastTouches[0].clientX + 0.5 * (lastTouches[1].clientX - lastTouches[0].clientX),
-        y: lastTouches[0].clientY + 0.5 * (lastTouches[1].clientY - lastTouches[0].clientY)
+        x:
+          lastTouches[0].clientX
+          + 0.5 * (lastTouches[1].clientX - lastTouches[0].clientX),
+        y:
+          lastTouches[0].clientY
+          + 0.5 * (lastTouches[1].clientY - lastTouches[0].clientY)
       }
 
       const p = this.point(currentFocus.x, currentFocus.y)
-      const focusP = this.point(2 * currentFocus.x - lastFocus.x, 2 * currentFocus.y - lastFocus.y)
+      const focusP = this.point(
+        2 * currentFocus.x - lastFocus.x,
+        2 * currentFocus.y - lastFocus.y
+      )
       const box = new Box(this.viewbox()).transform(
         new Matrix()
           .translate(-focusP.x, -focusP.y)
@@ -142,7 +169,10 @@ extend(Svg, {
 
       const currentTouches = normalizeEvent(ev)
 
-      const currentP = { x: currentTouches[0].clientX, y: currentTouches[0].clientY }
+      const currentP = {
+        x: currentTouches[0].clientX,
+        y: currentTouches[0].clientY
+      }
 
       const p1 = this.point(currentP.x, currentP.y)
 
@@ -150,15 +180,19 @@ extend(Svg, {
 
       const deltaP = [p2.x - p1.x, p2.y - p1.y]
 
-      const box = new Box(this.viewbox()).transform(new Matrix().translate(deltaP[0], deltaP[1]))
+      const box = new Box(this.viewbox()).transform(
+        new Matrix().translate(deltaP[0], deltaP[1])
+      )
 
       this.viewbox(box)
       lastP = currentP
     }
 
-    this.on('wheel.panZoom', wheelZoom)
-    this.on('touchstart.panZoom', pinchZoomStart, this, { passive: false })
-    this.on('mousedown.panZoom', panStart, this)
+    if (doWheelZoom) this.on('wheel.panZoom', wheelZoom)
+    if (doPinchZoom) {
+      this.on('touchstart.panZoom', pinchZoomStart, this, { passive: false })
+    }
+    if (doPanning) this.on('mousedown.panZoom', panStart, this)
 
     return this
   }
