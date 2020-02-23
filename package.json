@@ -19,7 +19,8 @@
     "rollup": "npx rollup -c .config/rollup.config.js",
     "zip": "zip -j dist/svg.panzoom.js.zip -- LICENSE README.md dist/svg.panzoom.js dist/svg.panzoom.js.map dist/svg.panzoom.min.js dist/svg.panzoom.min.js.map",
     "prepublishOnly": "rm -rf ./dist && npm run build --silent",
-    "postpublish": "npm run zip --silent"
+    "postpublish": "npm run zip --silent",
+    "format": "prettier-standard --format"
   },
   "repository": {
     "type": "git",
@@ -56,6 +57,7 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
+    "prettier-standard": "^16.1.0",
     "rollup": "^1.31.1",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",

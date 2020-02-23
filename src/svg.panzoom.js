@@ -82,40 +82,39 @@ extend(Svg, {
 
       // Distance Formula
       const lastDelta = Math.sqrt(
-        Math.pow(lastTouches[0].clientX - lastTouches[1].clientX, 2)
-          + Math.pow(lastTouches[0].clientY - lastTouches[1].clientY, 2)
+        Math.pow(lastTouches[0].clientX - lastTouches[1].clientX, 2) +
+          Math.pow(lastTouches[0].clientY - lastTouches[1].clientY, 2)
       )
 
       const currentDelta = Math.sqrt(
-        Math.pow(currentTouches[0].clientX - currentTouches[1].clientX, 2)
-          + Math.pow(currentTouches[0].clientY - currentTouches[1].clientY, 2)
+        Math.pow(currentTouches[0].clientX - currentTouches[1].clientX, 2) +
+          Math.pow(currentTouches[0].clientY - currentTouches[1].clientY, 2)
       )
 
       let zoomAmount = lastDelta / currentDelta
 
       if (
-        (zoom < zoomMin && zoomAmount > 1)
-        || (zoom > zoomMax && zoomAmount < 1)
+        (zoom < zoomMin && zoomAmount > 1)(zoom > zoomMax && zoomAmount < 1)
       ) {
         zoomAmount = 1
       }
 
       const currentFocus = {
         x:
-          currentTouches[0].clientX
-          + 0.5 * (currentTouches[1].clientX - currentTouches[0].clientX),
+          currentTouches[0].clientX +
+          0.5 * (currentTouches[1].clientX - currentTouches[0].clientX),
         y:
-          currentTouches[0].clientY
-          + 0.5 * (currentTouches[1].clientY - currentTouches[0].clientY)
+          currentTouches[0].clientY +
+          0.5 * (currentTouches[1].clientY - currentTouches[0].clientY)
       }
 
       const lastFocus = {
         x:
-          lastTouches[0].clientX
-          + 0.5 * (lastTouches[1].clientX - lastTouches[0].clientX),
+          lastTouches[0].clientX +
+          0.5 * (lastTouches[1].clientX - lastTouches[0].clientX),
         y:
-          lastTouches[0].clientY
-          + 0.5 * (lastTouches[1].clientY - lastTouches[0].clientY)
+          lastTouches[0].clientY +
+          0.5 * (lastTouches[1].clientY - lastTouches[0].clientY)
       }
 
       const p = this.point(currentFocus.x, currentFocus.y)
