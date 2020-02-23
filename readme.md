@@ -62,6 +62,31 @@ canvas.zoom(1) // uses center of viewport by default
 
 To disable `panZoom` or change its options just call it again with `false` or the new options.
 
+## Options
+
+You can override the default options by passing an object in to the ``.panZoom({options})`` call.
+
+| Option      | Default          | Description                                    |
+| ----------- | ---------------- | ---------------------------------------------- |
+| doPanning   | true             | Enable panning                                 |
+| doPinchZoom | true             | Enable pinch to zoom                           |
+| doWheelZoom | true             | Enable mouse wheel zoom                        |
+| zoomFactor  | 0.03             | How quickly to zoom when using ``doWheelZoom`` |
+| zoomMin     | 0                | The minimum zoom level                         |
+| zoomMax     | Number.MAX_VALUE | The maximum zoom level                         |
+
+### Example:
+
+``` js
+draw.panZoom({
+  doWheelZoom: false,
+  zoomMin: 0.5,
+  zoomMax: 2
+})
+```
+
+This will disable wheel zooming and set the maximum zoom to 2 or 200% and the minimum zoom to 0.5 or 50%.
+
 ## API
 
 `svg.panzoom.js` adds the `.zoom()` method to `<svg>`

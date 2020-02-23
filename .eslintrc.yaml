@@ -1,5 +1,6 @@
 
 extends: standard
+parser: babel-eslint
 rules:
   operator-linebreak: [ error, before ]
   object-curly-spacing: [ error, always ]
