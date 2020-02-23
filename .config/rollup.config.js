@@ -39,7 +39,8 @@ const getBabelConfig = (targets, corejs = false) =>
     plugins: [
       ['@babel/plugin-proposal-optional-chaining'],
       [
-        '@babel/plugin-proposal-nullish-coalescing-operator', {
+        '@babel/plugin-proposal-nullish-coalescing-operator',
+        {
           loose: true
         }
       ],
@@ -65,8 +66,8 @@ const config = (node, min) => ({
     file: node
       ? './dist/svg.panzoom.node.js'
       : min
-        ? './dist/svg.panzoom.min.js'
-        : './dist/svg.panzoom.js',
+      ? './dist/svg.panzoom.min.js'
+      : './dist/svg.panzoom.js',
     format: node ? 'cjs' : 'iife',
     // name: 'SVG.Filter',
     sourcemap: true,
@@ -89,13 +90,13 @@ const config = (node, min) => ({
     !min
       ? {}
       : uglify({
-        mangle: {
-          reserved: classes
-        },
-        output: {
-          preamble: headerShort
-        }
-      })
+          mangle: {
+            reserved: classes
+          },
+          output: {
+            preamble: headerShort
+          }
+        })
   ]
 })
 

@@ -95,7 +95,8 @@ extend(Svg, {
       let zoomAmount = lastDelta / currentDelta
 
       if (
-        (zoom < zoomMin && zoomAmount > 1)(zoom > zoomMax && zoomAmount < 1)
+        (zoom < zoomMin && zoomAmount > 1) ||
+        (zoom > zoomMax && zoomAmount < 1)
       ) {
         zoomAmount = 1
       }
@@ -126,8 +127,8 @@ extend(Svg, {
       const box = new Box(this.viewbox()).transform(
         new Matrix()
           .translate(-focusP.x, -focusP.y)
-          .translate(p.x, p.y)
           .scale(zoomAmount, 0, 0)
+          .translate(p.x, p.y)
       )
 
       this.viewbox(box)
@@ -190,11 +191,17 @@ extend(Svg, {
       lastP = currentP
     }
 
-    if (doWheelZoom) this.on('wheel.panZoom', wheelZoom)
+    if (doWheelZoom) {
+      this.on('wheel.panZoom', wheelZoom)
+    }
+
     if (doPinchZoom) {
       this.on('touchstart.panZoom', pinchZoomStart, this, { passive: false })
     }
-    if (doPanning) this.on('mousedown.panZoom', panStart, this)
+
+    if (doPanning) {
+      this.on('mousedown.panZoom', panStart, this, { passive: false })
+    }
 
     return this
   }
