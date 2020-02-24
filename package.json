@@ -5,7 +5,7 @@
   "main": "dist/svg.panzoom.js",
   "unpkg": "dist/svg.panzoom.min.js",
   "jsdelivr": "dist/svg.panzoom.min.js",
-  "browser": "src/svg.panzoom.js",
+  "browser": "dist/svg.panzoom.esm.js",
   "module": "src/svg.panzoom.js",
   "files": [
     "/dist",

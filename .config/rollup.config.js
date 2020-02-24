@@ -33,6 +33,7 @@ const getBabelConfig = (targets, corejs = false) =>
           modules: false,
           targets: targets || pkg.browserslist
           // useBuiltIns: 'usage'
+          // corejs: 3
         }
       ]
     ],
@@ -59,17 +60,18 @@ const getBabelConfig = (targets, corejs = false) =>
 // We loose literally nothing by let these unmangled
 const classes = []
 
-const config = (node, min) => ({
+const config = (node, min, esm = false) => ({
   external: ['@svgdotjs/svg.js'],
   input: 'src/svg.panzoom.js',
   output: {
-    file: node
+    file: esm
+      ? './dist/svg.panzoom.esm.js'
+      : node
       ? './dist/svg.panzoom.node.js'
       : min
       ? './dist/svg.panzoom.min.js'
       : './dist/svg.panzoom.js',
-    format: node ? 'cjs' : 'iife',
-    // name: 'SVG.Filter',
+    format: esm ? 'esm' : node ? 'cjs' : 'iife',
     sourcemap: true,
     banner: headerLong,
     // remove Object.freeze
@@ -101,6 +103,6 @@ const config = (node, min) => ({
 })
 
 // [node, minified]
-const modes = [[false], [false, true]]
+const modes = [[false], [false, true], [false, false, true]]
 
 export default modes.map(m => config(...m))
