@@ -69,15 +69,16 @@ To disable `panZoom` or change its options just call it again with `false` or th
 
 You can override the default options by passing an object in to the `.panZoom({options})` call.
 
-| Option      | Default          | Description                                                                                                    |
-| ----------- | ---------------- | -------------------------------------------------------------------------------------------------------------- |
-| doPanning   | true             | Enable panning                                                                                                 |
-| doPinchZoom | true             | Enable pinch to zoom                                                                                           |
-| doWheelZoom | true             | Enable mouse wheel zoom                                                                                        |
-| panMouse    | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
-| zoomFactor  | 0.03             | How quickly to zoom when using `doWheelZoom`                                                                   |
-| zoomMin     | 0                | The minimum zoom level                                                                                         |
-| zoomMax     | Number.MAX_VALUE | The maximum zoom level                                                                                         |
+| Option       | Default          | Description                                                                                                    |
+| ------------ | ---------------- | -------------------------------------------------------------------------------------------------------------- |
+| doPanning    | true             | Enable panning                                                                                                 |
+| doPinchZoom  | true             | Enable pinch to zoom                                                                                           |
+| doWheelZoom  | true             | Enable mouse wheel zoom                                                                                        |
+| panMouse     | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
+| oneFingerPan | false            | Enables the ability to pan with only one finger instead of two for touchdevices                                |
+| zoomFactor   | 2                | How quickly to zoom when using `doWheelZoom`                                                                   |
+| zoomMin      | Number.MIN_VALUE | The minimum zoom level                                                                                         |
+| zoomMax      | Number.MAX_VALUE | The maximum zoom level                                                                                         |
 
 ### Example:
 

@@ -18,6 +18,7 @@ extend(Svg, {
     const doPinchZoom = options.doPinchZoom ?? true
     const doPanning = options.doPanning ?? true
     const panMouse = options.panMouse ?? 0
+    const oneFingerPan = options.oneFingerPan ?? false
 
     let lastP
     let lastTouches
@@ -50,7 +51,21 @@ extend(Svg, {
     const pinchZoomStart = function (ev) {
       lastTouches = normalizeEvent(ev)
 
-      if (lastTouches.length < 2) return
+      // Start panning in case only one touch is found
+      if (lastTouches.length < 2) {
+        if (doPanning && oneFingerPan) {
+          panStart.call(this, ev)
+        }
+        return
+      }
+
+      // Stop panning for more than one touch
+      if (doPanning && oneFingerPan) {
+        panStop.call(this, ev)
+      }
+
+      // We call it so late, so the user is still able to scroll / reload the page via gesture
+      // In case oneFingerPan is not active
       ev.preventDefault()
 
       if (this.dispatch('pinchZoomStart', { event: ev }).defaultPrevented) {
@@ -66,6 +81,12 @@ extend(Svg, {
 
     const pinchZoomStop = function (ev) {
       ev.preventDefault()
+
+      const currentTouches = normalizeEvent(ev)
+      if (currentTouches.length > 1) {
+        return
+      }
+
       zoomInProgress = false
 
       this.dispatch('pinchZoomEnd', { event: ev })
@@ -73,6 +94,10 @@ extend(Svg, {
       off(document, 'touchmove.panZoom', pinchZoom)
       off(document, 'touchend.panZoom', pinchZoomStop)
       this.on('touchstart.panZoom', pinchZoomStart)
+
+      if (currentTouches.length && doPanning && oneFingerPan) {
+        panStart.call(this, ev)
+      }
     }
 
     const pinchZoom = function (ev) {
@@ -139,7 +164,11 @@ extend(Svg, {
     }
 
     const panStart = function (ev) {
-      if (ev.button !== panMouse) return
+      // In case panStart is called with touch, ev.button is undefined
+      if (!(ev.button == null) && ev.button !== panMouse) {
+        return
+      }
+
       ev.preventDefault()
 
       this.off('mousedown.panZoom', panStart)
@@ -152,15 +181,20 @@ extend(Svg, {
 
       lastP = { x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
-      on(document, 'mousemove.panZoom', panning, this)
-      on(document, 'mouseup.panZoom', panStop, this)
+      on(document, 'touchmove.panZoom mousemove.panZoom', panning, this, {
+        passive: false
+      })
+
+      on(document, 'touchend.panZoom mouseup.panZoom', panStop, this, {
+        passive: false
+      })
     }
 
     const panStop = function (ev) {
       ev.preventDefault()
 
-      off(document, 'mousemove.panZoom', panning)
-      off(document, 'mouseup.panZoom', panStop)
+      off(document, 'touchmove.panZoom mousemove.panZoom', panning)
+      off(document, 'touchend.panZoom mouseup.panZoom', panStop)
       this.on('mousedown.panZoom', panStart)
 
       this.dispatch('panEnd', { event: ev })
