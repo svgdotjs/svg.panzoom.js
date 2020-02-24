@@ -1,4 +1,13 @@
-import { Svg, on, off, extend, Matrix, Box } from '@svgdotjs/svg.js'
+import {
+  Svg,
+  on,
+  off,
+  extend,
+  Matrix,
+  Box,
+  Point,
+  Animator
+} from '@svgdotjs/svg.js'
 
 const normalizeEvent = ev =>
   ev.touches || [{ clientX: ev.clientX, clientY: ev.clientY }]
@@ -20,17 +29,21 @@ extend(Svg, {
     const panMouse = options.panMouse ?? 0
     const oneFingerPan = options.oneFingerPan ?? false
     const margins = options.margins ?? false
+    const momentum = options.momentum ?? true
+    const friction = options.friction ?? 0.2
 
     let lastP
     let lastTouches
     let zoomInProgress = false
+    let time
+    const v = new Point()
 
     const restrictToMargins = box => {
       if (!margins) return
-      const { top, left, bottom, right } = margins
-      const zoom = this.width() / box.width
 
+      const { top, left, bottom, right } = margins
       const { width, height } = this.attr(['width', 'height'])
+      const zoom = width / box.width
 
       const leftLimit = width - left / zoom
       const rightLimit = (right - width) / zoom
@@ -193,6 +206,8 @@ extend(Svg, {
         return
       }
 
+      time = +new Date()
+
       ev.preventDefault()
 
       this.off('mousedown.panZoom', panStart)
@@ -214,6 +229,31 @@ extend(Svg, {
       })
     }
 
+    const goMomentum = () => {
+      const dt = +new Date() - time
+
+      v.x = v.x * (1 - friction)
+      v.y = v.y * (1 - friction)
+
+      console.log(v)
+
+      var clientX = lastP.x - v.x * dt
+      var clientY = lastP.y - v.y * dt
+
+      time += dt
+
+      console.log(clientX, clientY)
+
+      panHelper.call(this, { clientX, clientY })
+
+      console.log(v)
+
+      if (Math.abs(v.x) > 0.1 || Math.abs(v.y) > 0.1) {
+        console.log('still going')
+        Animator.frame(goMomentum)
+      }
+    }
+
     const panStop = function (ev) {
       ev.preventDefault()
 
@@ -221,12 +261,14 @@ extend(Svg, {
       off(document, 'touchend.panZoom mouseup.panZoom', panStop)
       this.on('mousedown.panZoom', panStart)
 
-      this.dispatch('panEnd', { event: ev })
+      if (momentum) {
+        Animator.frame(goMomentum)
+      } else {
+        this.dispatch('panEnd', { event: ev })
+      }
     }
 
-    const panning = function (ev) {
-      ev.preventDefault()
-
+    const panHelper = function (ev) {
       const currentTouches = normalizeEvent(ev)
 
       const currentP = {
@@ -238,16 +280,33 @@ extend(Svg, {
 
       const p2 = this.point(lastP.x, lastP.y)
 
-      const deltaP = [p2.x - p1.x, p2.y - p1.y]
+      // delta
+      const ds = [p2.x - p1.x, p2.y - p1.y]
+      const ds2 = [lastP.x - currentP.x, lastP.y - currentP.y]
 
       const box = new Box(this.viewbox()).transform(
-        new Matrix().translate(deltaP[0], deltaP[1])
+        new Matrix().translate(ds[0], ds[1])
       )
 
       restrictToMargins(box)
 
       this.viewbox(box)
       lastP = currentP
+
+      return ds2
+    }
+
+    const panning = function (ev) {
+      ev.preventDefault()
+
+      // delta
+      const ds = panHelper.call(this, ev)
+
+      const dt = +new Date() - time
+      v.x = ds[0] / dt
+      v.y = ds[1] / dt
+
+      time += dt
     }
 
     if (doWheelZoom) {
