@@ -76,6 +76,7 @@ You can override the default options by passing an object in to the `.panZoom({o
 | doWheelZoom  | true             | Enable mouse wheel zoom                                                                                        |
 | panMouse     | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
 | oneFingerPan | false            | Enables the ability to pan with only one finger instead of two for touchdevices                                |
+| margins      | false            | An object {top, left, right, bottom} to restrict the pan area so that at least x px are still visible          |
 | zoomFactor   | 2                | How quickly to zoom when using `doWheelZoom`                                                                   |
 | zoomMin      | Number.MIN_VALUE | The minimum zoom level                                                                                         |
 | zoomMax      | Number.MAX_VALUE | The maximum zoom level                                                                                         |
@@ -91,22 +92,6 @@ draw.panZoom({
 ```
 
 This will disable wheel zooming and set the maximum zoom to 2 or 200% and the minimum zoom to 0.5 or 50%.
-
-## API
-
-`svg.panzoom.js` adds the `.zoom()` method to `<svg>`
-
-- `zoom()` - returns current zoom level
-- `zoom(Number)` - will zoom in or out depending if the Number is greater or less than the current zoom level
-- `zoom(Number, {x,y})` - will zoom with the x/y coordinate as center point
-- `zoom(Number, new SVG.Point(x,y))` - will zoom with the x/y coordinate as center point
-
-| Method                             | Return Value |
-| ---------------------------------- | ------------ |
-| `zoom()`                           | Number       |
-| `zoom(Number)`                     | element      |
-| `zoom(Number, {x,y})`              | element      |
-| `zoom(Number, new SVG.Point(x,y))` | element      |
 
 ## Events
 

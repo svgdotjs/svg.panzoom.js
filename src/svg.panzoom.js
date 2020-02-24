@@ -19,10 +19,28 @@ extend(Svg, {
     const doPanning = options.doPanning ?? true
     const panMouse = options.panMouse ?? 0
     const oneFingerPan = options.oneFingerPan ?? false
+    const margins = options.margins ?? false
 
     let lastP
     let lastTouches
     let zoomInProgress = false
+
+    const restrictToMargins = box => {
+      if (!margins) return
+      const { top, left, bottom, right } = margins
+      const zoom = this.width() / box.width
+
+      const { width, height } = this.attr(['width', 'height'])
+
+      const leftLimit = width - left / zoom
+      const rightLimit = (right - width) / zoom
+      const topLimit = height - top / zoom
+      const bottomLimit = (bottom - height) / zoom
+
+      box.x = Math.min(leftLimit, Math.max(rightLimit, box.x))
+      box.y = Math.min(topLimit, Math.max(bottomLimit, box.y))
+      return box
+    }
 
     const wheelZoom = function (ev) {
       ev.preventDefault()
@@ -46,6 +64,11 @@ extend(Svg, {
       }
 
       this.zoom(lvl, p)
+
+      if (margins) {
+        const box = restrictToMargins(this.viewbox())
+        this.viewbox(box)
+      }
     }
 
     const pinchZoomStart = function (ev) {
@@ -156,6 +179,7 @@ extend(Svg, {
           .translate(p.x, p.y)
       )
 
+      restrictToMargins(box)
       this.viewbox(box)
 
       lastTouches = currentTouches
@@ -219,6 +243,8 @@ extend(Svg, {
       const box = new Box(this.viewbox()).transform(
         new Matrix().translate(deltaP[0], deltaP[1])
       )
+
+      restrictToMargins(box)
 
       this.viewbox(box)
       lastP = currentP
