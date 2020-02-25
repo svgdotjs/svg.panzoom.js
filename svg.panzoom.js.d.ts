@@ -1,4 +1,4 @@
-enum mousebutton {
+export enum MouseButton {
   left = 0,
   middle,
   right,
@@ -14,13 +14,10 @@ interface marginOptions {
 }
 
 interface options {
-  zoomFactor?: number
-  zoomMin?: number
-  zoomMax?: number
   doPanning?: boolean
   doPinchZoom?: boolean
   doWheelZoom?: boolean
-  panMouse?: mousebutton
+  panMouse?: MouseButton
   oneFingerPan?: boolean
   margins?: boolean | marginOptions
   zoomFactor?: number
