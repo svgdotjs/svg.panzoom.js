@@ -14,10 +14,10 @@ extend(Svg, {
     const zoomFactor = options.zoomFactor ?? 2
     const zoomMin = options.zoomMin ?? Number.MIN_VALUE
     const zoomMax = options.zoomMax ?? Number.MAX_VALUE
-    const doWheelZoom = options.doWheelZoom ?? true
-    const doPinchZoom = options.doPinchZoom ?? true
-    const doPanning = options.doPanning ?? true
-    const panMouse = options.panMouse ?? 0
+    const doWheelZoom = options.wheelZoom ?? true
+    const doPinchZoom = options.pinchZoom ?? true
+    const doPanning = options.panning ?? true
+    const panButton = options.panButton ?? 0
     const oneFingerPan = options.oneFingerPan ?? false
     const margins = options.margins ?? false
 
@@ -188,8 +188,10 @@ extend(Svg, {
     }
 
     const panStart = function (ev) {
+      const isMouse = ev.type.indexOf('mouse') > -1
+
       // In case panStart is called with touch, ev.button is undefined
-      if (!(ev.button == null) && ev.button !== panMouse) {
+      if (isMouse && ev.button !== panButton && ev.which !== panButton + 1) {
         return
       }
 
@@ -240,18 +242,27 @@ extend(Svg, {
 
       const deltaP = [p2.x - p1.x, p2.y - p1.y]
 
+      if (!deltaP[0] && !deltaP[1]) {
+        return
+      }
+
       const box = new Box(this.viewbox()).transform(
         new Matrix().translate(deltaP[0], deltaP[1])
       )
 
+      lastP = currentP
+
       restrictToMargins(box)
 
+      if (this.dispatch('panning', { box, event: ev }).defaultPrevented) {
+        return
+      }
+
       this.viewbox(box)
-      lastP = currentP
     }
 
     if (doWheelZoom) {
-      this.on('wheel.panZoom', wheelZoom)
+      this.on('wheel.panZoom', wheelZoom, this, { passive: false })
     }
 
     if (doPinchZoom) {
