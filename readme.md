@@ -74,7 +74,7 @@ You can override the default options by passing an object in to the `.panZoom({o
 | panning      | true             | Enable panning                                                                                                 |
 | pinchZoom    | true             | Enable pinch to zoom                                                                                           |
 | wheelZoom    | true             | Enable mouse wheel zoom                                                                                        |
-| panMouse     | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
+| panButton    | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
 | oneFingerPan | false            | Enables the ability to pan with only one finger instead of two for touchdevices                                |
 | margins      | false            | An object {top, left, right, bottom} to restrict the pan area so that at least x px are still visible          |
 | zoomFactor   | 2                | How quickly to zoom when using `doWheelZoom`                                                                   |
