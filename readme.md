@@ -5,19 +5,20 @@
 ## Getting started
 
 ```
-npm install @svgdotjs/svg.panzoom.js
+npm install @svgdotjs/svg.js @svgdotjs/svg.panzoom.js
 ```
 
 Include this plugin after including the svg.js library in your html document.
 
 ```
-<script src="svg.js"></script>
-<script src="svg.panzoom.js"></script>
+<script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
+<script src="node_modules/@svgdotjs/svg.panzoom.js/dist/svg.panzoom.js"></script>
 ```
 
 Or for esm just import it:
 
 ```
+import { SVG } from '@svgdotjs/svg.js'
 import '@svgdotjs/svg.panzoom.js'
 ```
 
