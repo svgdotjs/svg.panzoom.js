@@ -14,8 +14,8 @@ interface marginOptions {
 }
 
 interface options {
-  doPanning?: boolean
-  doPinchZoom?: boolean
+  panning?: boolean
+  pinchZoom?: boolean
   wheelZoom?: boolean
   panMouse?: MouseButton
   oneFingerPan?: boolean
