@@ -20,6 +20,8 @@ extend(Svg, {
     const panButton = options.panButton ?? 0
     const oneFingerPan = options.oneFingerPan ?? false
     const margins = options.margins ?? false
+    const wheelZoomdeltaModeLinePixels = options.deltaModeLinePixels ?? 17
+    const wheelZoomdeltaModeScreenPixels = options.deltaModeScreenPixels ?? 53
 
     let lastP
     let lastTouches
@@ -48,7 +50,31 @@ extend(Svg, {
       // touchpads can give ev.deltaY == 0, which skrews the lvl calculation
       if (ev.deltaY === 0) return
 
-      let lvl = Math.pow(1 + zoomFactor, (-1 * ev.deltaY) / 100) * this.zoom()
+      // When wheeling on a mouse,
+      // - chrome by default uses deltaY = 53, deltaMode = 0 (pixel)
+      // - firefox by default uses deltaY = 3, deltaMode = 1 (line)
+      // - chrome and firefox on windows after configuring "One screen at a time"
+      //   use deltaY = 1, deltaMode = 2 (screen)
+      //
+      // Note that when when wheeling on a touchpad, deltaY depends on how fast
+      // you swipe, but the deltaMode is still different between the browsers.
+      //
+      // Normalize everything so that zooming speed is approximately the same in all cases
+      let normalizedPixelDeltaY
+      switch (ev.deltaMode) {
+      case 1:
+        normalizedPixelDeltaY = ev.deltaY * wheelZoomdeltaModeLinePixels
+        break
+      case 2:
+        normalizedPixelDeltaY = ev.deltaY * wheelZoomdeltaModeScreenPixels
+        break
+      default:
+        // 0 (already pixels) or new mode (avoid crashing)
+        normalizedPixelDeltaY = ev.deltaY
+        break
+      }
+
+      let lvl = Math.pow(1 + zoomFactor, (-1 * normalizedPixelDeltaY) / 100) * this.zoom()
       const p = this.point(ev.clientX, ev.clientY)
 
       if (lvl > zoomMax) {
