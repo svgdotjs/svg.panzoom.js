@@ -81,6 +81,8 @@ You can override the default options by passing an object in to the `.panZoom({o
 | zoomFactor   | 2                | How quickly to zoom when using `doWheelZoom`                                                                   |
 | zoomMin      | Number.MIN_VALUE | The minimum zoom level                                                                                         |
 | zoomMax      | Number.MAX_VALUE | The maximum zoom level                                                                                         |
+| wheelZoomDeltaModeLinePixels    | 17 | The multiplier to convert wheel zoom deltaY values from deltaMode=1 (lines) to deltaMode=0 (pixels)       |
+| wheelZoomDeltaModeScreenPixels  | 53 | The multiplier to convert wheel zoom deltaY values from deltaMode=2 (screen) to deltaMode=0 (pixels)      |
 
 ### Example:
 
