@@ -78,7 +78,7 @@ You can override the default options by passing an object in to the `.panZoom({o
 | panButton    | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
 | oneFingerPan | false            | Enables the ability to pan with only one finger instead of two for touchdevices                                |
 | margins      | false            | An object {top, left, right, bottom} to restrict the pan area so that at least x px are still visible          |
-| zoomFactor   | 2                | How quickly to zoom when using `doWheelZoom`                                                                   |
+| zoomFactor   | 2                | How quickly to zoom when using `wheelZoom`                                                                   |
 | zoomMin      | Number.MIN_VALUE | The minimum zoom level                                                                                         |
 | zoomMax      | Number.MAX_VALUE | The maximum zoom level                                                                                         |
 | wheelZoomDeltaModeLinePixels    | 17 | The multiplier to convert wheel zoom deltaY values from deltaMode=1 (lines) to deltaMode=0 (pixels)       |
