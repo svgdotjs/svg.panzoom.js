@@ -20,8 +20,8 @@ extend(Svg, {
     const panButton = options.panButton ?? 0
     const oneFingerPan = options.oneFingerPan ?? false
     const margins = options.margins ?? false
-    const wheelZoomdeltaModeLinePixels = options.deltaModeLinePixels ?? 17
-    const wheelZoomdeltaModeScreenPixels = options.deltaModeScreenPixels ?? 53
+    const wheelZoomDeltaModeLinePixels = options.wheelZoomDeltaModeLinePixels ?? 17
+    const wheelZoomDeltaModeScreenPixels = options.wheelZoomDeltaModeScreenPixels ?? 53
 
     let lastP
     let lastTouches
@@ -60,10 +60,10 @@ extend(Svg, {
       let normalizedPixelDeltaY
       switch (ev.deltaMode) {
       case 1:
-        normalizedPixelDeltaY = ev.deltaY * wheelZoomdeltaModeLinePixels
+        normalizedPixelDeltaY = ev.deltaY * wheelZoomDeltaModeLinePixels
         break
       case 2:
-        normalizedPixelDeltaY = ev.deltaY * wheelZoomdeltaModeScreenPixels
+        normalizedPixelDeltaY = ev.deltaY * wheelZoomDeltaModeScreenPixels
         break
       default:
         // 0 (already pixels) or new mode (avoid crashing)
