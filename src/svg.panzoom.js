@@ -47,9 +47,6 @@ extend(Svg, {
     const wheelZoom = function (ev) {
       ev.preventDefault()
 
-      // touchpads can give ev.deltaY == 0, which skrews the lvl calculation
-      if (ev.deltaY === 0) return
-
       // When wheeling on a mouse,
       // - chrome by default uses deltaY = 53, deltaMode = 0 (pixel)
       // - firefox by default uses deltaY = 3, deltaMode = 1 (line)
