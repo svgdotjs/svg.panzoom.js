@@ -28,7 +28,7 @@ extend(Svg, {
     let zoomInProgress = false
 
     const restrictToMargins = box => {
-      if (!margins) return
+      if (!margins) return box
       const { top, left, bottom, right } = margins
       const zoom = this.width() / box.width
 
