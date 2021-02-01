@@ -27,20 +27,143 @@ extend(Svg, {
     let lastTouches
     let zoomInProgress = false
 
+    const viewbox = this.viewbox()
+
     const restrictToMargins = box => {
       if (!margins) return box
       const { top, left, bottom, right } = margins
-      const zoom = this.width() / box.width
 
       const { width, height } = this.attr(['width', 'height'])
+      const preserveAspectRatio = this.node.preserveAspectRatio.baseVal
 
-      const leftLimit = width - left / zoom
-      const rightLimit = (right - width) / zoom
-      const topLimit = height - top / zoom
-      const bottomLimit = (bottom - height) / zoom
+      // The current viewport (exactly what is shown on the screen, what we ultimately want to restrict)
+      // is not always exactly the same as current viewbox. They are different when the viewbox aspectRatio and the svg aspectRatio
+      // are different and preserveAspectRatio is not "none". These offsets represent the difference in user coordinates
+      // between the side of the viewbox and the side of the viewport.
+      let viewportLeftOffset = 0
+      let viewportRightOffset = 0
+      let viewportTopOffset = 0
+      let viewportBottomOffset = 0
 
-      box.x = Math.min(leftLimit, Math.max(rightLimit, box.x))
-      box.y = Math.min(topLimit, Math.max(bottomLimit, box.y))
+      // preserveAspectRatio none has no offsets
+      if (preserveAspectRatio.align !== preserveAspectRatio.SVG_PRESERVEASPECTRATIO_NONE) {
+        const svgAspectRatio = width / height
+        const viewboxAspectRatio = viewbox.width / viewbox.height
+        // when aspectRatios are the same, there are no offsets
+        if (viewboxAspectRatio !== svgAspectRatio) {
+          const changedAxis = svgAspectRatio > viewboxAspectRatio ? 'width' : 'height'
+          // aspectRatio unknown is like meet because that's the default
+          if (preserveAspectRatio.meetOrSlice === preserveAspectRatio.SVG_MEETORSLICE_MEET) {
+            // in meet mode, the viewport is the viewbox, extended on one
+            // or both sides to match the aspectRatio of the svg
+            if (changedAxis === 'width') {
+              const widthOffset = box.width / viewboxAspectRatio * svgAspectRatio - box.width
+              // aspectRatio undefined is like mid because that's the default
+              if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX) {
+                viewportLeftOffset = -widthOffset / 2
+                viewportRightOffset = widthOffset / 2
+              } else if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX) {
+                viewportRightOffset = widthOffset
+              } else if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
+                viewportLeftOffset = -widthOffset
+              }
+            } else {
+              const heightOffset = box.height * viewboxAspectRatio / svgAspectRatio - box.height
+              if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID) {
+                viewportTopOffset = -heightOffset / 2
+                viewportBottomOffset = heightOffset / 2
+              } else if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN) {
+                viewportBottomOffset = heightOffset
+              } else if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
+                viewportTopOffset = -heightOffset
+              }
+            }
+          } else if (preserveAspectRatio.meetOrSlice === preserveAspectRatio.SVG_MEETORSLICE_SLICE) {
+            // in slice mode, the viewport is the viewbox, shrunk on one
+            // or both sides to match the aspectRatio of the svg
+            if (changedAxis === 'width') {
+              const heightOffset = box.height - box.height * viewboxAspectRatio / svgAspectRatio
+              if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX) {
+                viewportTopOffset = heightOffset / 2
+                viewportBottomOffset = -heightOffset / 2
+              } else if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX) {
+                viewportBottomOffset = -heightOffset
+              } else if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
+                viewportTopOffset = heightOffset
+              }
+            } else {
+              const widthOffset = box.width - box.width / viewboxAspectRatio * svgAspectRatio
+              if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID) {
+                viewportLeftOffset = widthOffset / 2
+                viewportRightOffset = -widthOffset / 2
+              } else if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN) {
+                viewportLeftOffset = -widthOffset
+              } else if (
+                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX ||
+               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
+                viewportRightOffset = widthOffset
+              }
+            }
+          }
+        }
+      }
+
+      // when box.x == leftLimit, the image is panned to the left,
+      // i.e the current box is to the right of the initial viewbox,
+      // and only the right part of the initial image is visible, i.e.
+      // the right side of the initial viewbox minus left margin (viewbox.x+viewbox.width-left)
+      // is aligned with the left side of the viewport (box.x + viewportLeftOffset):
+      // viewbox.width + viewbox.x - left = box.x + viewportLeftOffset
+      // viewbox.width + viewbox.x - left - viewportLeftOffset = box.x (= leftLimit)
+      const leftLimit = viewbox.width + viewbox.x - left - viewportLeftOffset
+      // when box.x == rightLimit, the image is panned to the right,
+      // i.e the current box is to the left of the initial viewbox
+      // and only the left part of the initial image is visible, i.e
+      // the left side of the initial viewbox plus right margin (viewbox.x + right)
+      // is aligned with the right side of the viewport (box.x + box.width + viewportRightOffset)
+      // viewbox.x + right = box.x + box.width + viewportRightOffset
+      // viewbox.x + right - box.width - viewportRightOffset = box.x (= rightLimit)
+      const rightLimit = viewbox.x + right - box.width - viewportRightOffset
+      // same with top and bottom
+      const topLimit = viewbox.height + viewbox.y - top - viewportTopOffset
+      const bottomLimit = viewbox.y + bottom - box.height - viewportBottomOffset
+
+      box.x = Math.min(leftLimit, Math.max(rightLimit, box.x)) // enforce rightLimit <= box.x <= leftLimit
+      box.y = Math.min(topLimit, Math.max(bottomLimit, box.y)) // enforce bottomLimit <= box.y <= topLimit
       return box
     }
 
