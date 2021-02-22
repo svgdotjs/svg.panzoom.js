@@ -17,7 +17,7 @@ interface options {
   panning?: boolean
   pinchZoom?: boolean
   wheelZoom?: boolean
-  panMouse?: MouseButton
+  panButton?: MouseButton
   oneFingerPan?: boolean
   margins?: boolean | marginOptions
   zoomFactor?: number
