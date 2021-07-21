@@ -1,7 +1,7 @@
 import { Svg, on, off, extend, Matrix, Box } from '@svgdotjs/svg.js'
 
 const normalizeEvent = ev =>
-  ev.touches || [ { clientX: ev.clientX, clientY: ev.clientY } ]
+  ev.touches || [{ clientX: ev.clientX, clientY: ev.clientY }]
 
 extend(Svg, {
   panZoom (options) {
@@ -33,7 +33,7 @@ extend(Svg, {
       if (!margins) return box
       const { top, left, bottom, right } = margins
 
-      const { width, height } = this.attr([ 'width', 'height' ])
+      const { width, height } = this.attr(['width', 'height'])
       const preserveAspectRatio = this.node.preserveAspectRatio.baseVal
 
       // The current viewport (exactly what is shown on the screen, what we ultimately want to restrict)
@@ -55,9 +55,13 @@ extend(Svg, {
           const isMeet = preserveAspectRatio.meetOrSlice !== preserveAspectRatio.SVG_MEETORSLICE_SLICE
           const changedAxis = svgAspectRatio > viewboxAspectRatio ? 'width' : 'height'
           const isWidth = changedAxis === 'width'
+          const changeHorizontal = (isMeet && isWidth) || (!isMeet && !isWidth)
+          const ratio = changeHorizontal
+            ? svgAspectRatio / viewboxAspectRatio
+            : viewboxAspectRatio / svgAspectRatio
 
-          const offset = box[changedAxis] / viewboxAspectRatio * svgAspectRatio - box[changedAxis]
-          if ((isMeet && isWidth) || (!isMeet && !isWidth)) {
+          const offset = box[changedAxis] - box[changedAxis] * ratio
+          if (changeHorizontal) {
             if (
               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
@@ -342,7 +346,7 @@ extend(Svg, {
 
       const p2 = this.point(lastP.x, lastP.y)
 
-      const deltaP = [ p2.x - p1.x, p2.y - p1.y ]
+      const deltaP = [p2.x - p1.x, p2.y - p1.y]
 
       if (!deltaP[0] && !deltaP[1]) {
         return
