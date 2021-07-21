@@ -1,7 +1,7 @@
 import { Svg, on, off, extend, Matrix, Box } from '@svgdotjs/svg.js'
 
 const normalizeEvent = ev =>
-  ev.touches || [{ clientX: ev.clientX, clientY: ev.clientY }]
+  ev.touches || [ { clientX: ev.clientX, clientY: ev.clientY } ]
 
 extend(Svg, {
   panZoom (options) {
@@ -33,7 +33,7 @@ extend(Svg, {
       if (!margins) return box
       const { top, left, bottom, right } = margins
 
-      const { width, height } = this.attr(['width', 'height'])
+      const { width, height } = this.attr([ 'width', 'height' ])
       const preserveAspectRatio = this.node.preserveAspectRatio.baseVal
 
       // The current viewport (exactly what is shown on the screen, what we ultimately want to restrict)
@@ -51,94 +51,50 @@ extend(Svg, {
         const viewboxAspectRatio = viewbox.width / viewbox.height
         // when aspectRatios are the same, there are no offsets
         if (viewboxAspectRatio !== svgAspectRatio) {
-          const changedAxis = svgAspectRatio > viewboxAspectRatio ? 'width' : 'height'
           // aspectRatio unknown is like meet because that's the default
-          if (preserveAspectRatio.meetOrSlice === preserveAspectRatio.SVG_MEETORSLICE_MEET) {
-            // in meet mode, the viewport is the viewbox, extended on one
-            // or both sides to match the aspectRatio of the svg
-            if (changedAxis === 'width') {
-              const widthOffset = box.width / viewboxAspectRatio * svgAspectRatio - box.width
-              // aspectRatio undefined is like mid because that's the default
-              if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX) {
-                viewportLeftOffset = -widthOffset / 2
-                viewportRightOffset = widthOffset / 2
-              } else if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX) {
-                viewportRightOffset = widthOffset
-              } else if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
-                viewportLeftOffset = -widthOffset
-              }
-            } else {
-              const heightOffset = box.height * viewboxAspectRatio / svgAspectRatio - box.height
-              if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID) {
-                viewportTopOffset = -heightOffset / 2
-                viewportBottomOffset = heightOffset / 2
-              } else if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN) {
-                viewportBottomOffset = heightOffset
-              } else if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
-                viewportTopOffset = -heightOffset
-              }
+          const isMeet = preserveAspectRatio.meetOrSlice !== preserveAspectRatio.SVG_MEETORSLICE_SLICE
+          const changedAxis = svgAspectRatio > viewboxAspectRatio ? 'width' : 'height'
+          const isWidth = changedAxis === 'width'
+
+          const offset = box[changedAxis] / viewboxAspectRatio * svgAspectRatio - box[changedAxis]
+          if ((isMeet && isWidth) || (!isMeet && !isWidth)) {
+            if (
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX) {
+              viewportLeftOffset = offset / 2
+              viewportRightOffset = -offset / 2
+            } else if (
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX) {
+              viewportRightOffset = -offset
+            } else if (
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
+              viewportLeftOffset = offset
             }
-          } else if (preserveAspectRatio.meetOrSlice === preserveAspectRatio.SVG_MEETORSLICE_SLICE) {
-            // in slice mode, the viewport is the viewbox, shrunk on one
-            // or both sides to match the aspectRatio of the svg
-            if (changedAxis === 'width') {
-              const heightOffset = box.height - box.height * viewboxAspectRatio / svgAspectRatio
-              if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID) {
-                viewportTopOffset = heightOffset / 2
-                viewportBottomOffset = -heightOffset / 2
-              } else if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN) {
-                viewportBottomOffset = -heightOffset
-              } else if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
-                viewportTopOffset = heightOffset
-              }
-            } else {
-              const widthOffset = box.width - box.width / viewboxAspectRatio * svgAspectRatio
-              if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX) {
-                viewportLeftOffset = widthOffset / 2
-                viewportRightOffset = -widthOffset / 2
-              } else if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX) {
-                viewportRightOffset = -widthOffset
-              } else if (
-                preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID ||
-               preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
-                viewportLeftOffset = widthOffset
-              }
+          } else {
+            if (
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID) {
+              viewportTopOffset = -offset / 2
+              viewportBottomOffset = offset / 2
+            } else if (
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN) {
+              viewportBottomOffset = offset
+            } else if (
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX ||
+              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
+              viewportTopOffset = -offset
             }
           }
+
         }
       }
 
@@ -386,7 +342,7 @@ extend(Svg, {
 
       const p2 = this.point(lastP.x, lastP.y)
 
-      const deltaP = [p2.x - p1.x, p2.y - p1.y]
+      const deltaP = [ p2.x - p1.x, p2.y - p1.y ]
 
       if (!deltaP[0] && !deltaP[1]) {
         return
