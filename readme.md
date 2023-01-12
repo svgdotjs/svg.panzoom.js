@@ -29,6 +29,7 @@ To enable pan/zoom on an svg:
 var canvas = SVG()
   .addTo('#id')
   .size(1000, 1000)
+  .viewbox('0 0 1000 1000')
   .panZoom()
 
 // zoom programatically
@@ -47,6 +48,7 @@ This could look like this:
 var canvas = SVG()
   .addTo('#id')
   .size(1000, 1000)
+  .viewbox('0 0 1000 1000')
   .panZoom({ zoomMin: 0.5, zoomMax: 20 })
 ```
 
