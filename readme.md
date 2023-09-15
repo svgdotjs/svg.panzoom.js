@@ -103,24 +103,23 @@ This will disable wheel zooming and set the maximum zoom to 2 or 200% and the mi
 Multiple events are fired doing different actions. This allow you to respond
 to actions and in some cases stop an action via `preventDefault()`.
 
-`zoom` is fired when a mouse wheel event or programmable `zoom()` triggers
-a zoom. This usually doesn't happen on mobile devices, in which case
-`pinchZoomStart` is fired when a zoom happens.
+`zoom` is fired when a mouse wheel event or pinchZoom triggers
+a zoom.
 
 Events fired from SVG.js are [`CustomEvent`s](http://devdocs.io/dom/customevent),
 so the arguments passed from svg.panzoom.js are in in the `.detail` property.
 
-| Event Name     | Argument Value   | preventDefault support |
-| -------------- | ---------------- | ---------------------- |
-| zoom           | `{ lvl, focus }` | YES                    |
-| panStart       | `{ event }`      | NO                     |
-| panEnd         | `{ event }`      | NO                     |
-| panning        | `{ box }`        | YES                    |
-| pinchZoomStart | `{ event }`      | YES                    |
-| pinchZoomEnd   | `{ event }`      | NO                     |
+| Event Name     | Argument Value       | preventDefault support |
+| -------------- | -------------------- | ---------------------- |
+| zoom           | `{ lvl/box, focus }` | YES                    |
+| panStart       | `{ event }`          | NO                     |
+| panEnd         | `{ event }`          | NO                     |
+| panning        | `{ box }`            | YES                    |
+| pinchZoomStart | `{ event }`          | YES                    |
+| pinchZoomEnd   | `{ event }`          | NO                     |
 
 Where `lvl` is the new zoom level,
-[`focus`](https://svgjs.com/docs/3.0/classes/#svg-point) is th point of zoom, [`box`](https://svgjs.com/docs/3.0/classes/#svg-box) is the new calculated viewbox
+[`focus`](https://svgjs.com/docs/3.0/classes/#svg-point) is the point that is zoomed into, [`box`](https://svgjs.com/docs/3.0/classes/#svg-box) is the new calculated viewbox
 and event is the event that triggered the action.
 
 An example of stopping a pinch-zoom action:
