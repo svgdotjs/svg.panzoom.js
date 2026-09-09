@@ -15,6 +15,15 @@ Include this plugin after including the svg.js library in your html document.
 <script src="node_modules/@svgdotjs/svg.panzoom.js/dist/svg.panzoom.js"></script>
 ```
 
+Or from a cdn:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js/dist/svg.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.panzoom.js/dist/svg.panzoom.js"></script>
+```
+
+A bundle is also attached to every [release](https://github.com/svgdotjs/svg.panzoom.js/releases).
+
 Or for esm just import it:
 
 ```
@@ -72,19 +81,19 @@ To disable `panZoom` or change its options just call it again with `false` or th
 
 You can override the default options by passing an object in to the `.panZoom({options})` call.
 
-| Option       | Default          | Description                                                                                                    |
-| ------------ | ---------------- | -------------------------------------------------------------------------------------------------------------- |
-| panning      | true             | Enable panning                                                                                                 |
-| pinchZoom    | true             | Enable pinch to zoom                                                                                           |
-| wheelZoom    | true             | Enable mouse wheel zoom                                                                                        |
-| panButton    | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
-| oneFingerPan | false            | Enables the ability to pan with only one finger instead of two for touchdevices                                |
-| margins      | false            | An object {top, left, right, bottom} to restrict the pan area towards this side so that at least x user units of the opposite side are still visible |
-| zoomFactor   | 2                | How quickly to zoom when using `wheelZoom`                                                                   |
-| zoomMin      | Number.MIN_VALUE | The minimum zoom level                                                                                         |
-| zoomMax      | Number.MAX_VALUE | The maximum zoom level                                                                                         |
-| wheelZoomDeltaModeLinePixels    | 17 | The multiplier to convert wheel zoom deltaY values from deltaMode=1 (lines) to deltaMode=0 (pixels)       |
-| wheelZoomDeltaModeScreenPixels  | 53 | The multiplier to convert wheel zoom deltaY values from deltaMode=2 (screen) to deltaMode=0 (pixels)      |
+| Option                         | Default          | Description                                                                                                                                          |
+| ------------------------------ | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| panning                        | true             | Enable panning                                                                                                                                       |
+| pinchZoom                      | true             | Enable pinch to zoom                                                                                                                                 |
+| wheelZoom                      | true             | Enable mouse wheel zoom                                                                                                                              |
+| panButton                      | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button))                                       |
+| oneFingerPan                   | false            | Enables the ability to pan with only one finger instead of two for touchdevices                                                                      |
+| margins                        | false            | An object {top, left, right, bottom} to restrict the pan area towards this side so that at least x user units of the opposite side are still visible |
+| zoomFactor                     | 2                | How quickly to zoom when using `wheelZoom`                                                                                                           |
+| zoomMin                        | Number.MIN_VALUE | The minimum zoom level                                                                                                                               |
+| zoomMax                        | Number.MAX_VALUE | The maximum zoom level                                                                                                                               |
+| wheelZoomDeltaModeLinePixels   | 17               | The multiplier to convert wheel zoom deltaY values from deltaMode=1 (lines) to deltaMode=0 (pixels)                                                  |
+| wheelZoomDeltaModeScreenPixels | 53               | The multiplier to convert wheel zoom deltaY values from deltaMode=2 (screen) to deltaMode=0 (pixels)                                                 |
 
 ### Example:
 
@@ -125,10 +134,7 @@ and event is the event that triggered the action.
 An example of stopping a pinch-zoom action:
 
 ```js
-var canvas = SVG()
-  .addTo('#id')
-  .size(1000, 1000)
-  .panZoom()
+var canvas = SVG().addTo('#id').size(1000, 1000).panZoom()
 
 canvas.on('pinchZoomStart', function (ev) {
   ev.preventDefault()

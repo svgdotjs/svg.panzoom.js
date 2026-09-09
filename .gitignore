@@ -2,5 +2,4 @@
 .idea
 .vscode/
 node_modules/
-test
-dist/
+dist
