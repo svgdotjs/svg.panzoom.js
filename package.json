@@ -16,6 +16,7 @@
     "build": "npm run fix && npm run rollup --silent",
     "fix": "npx eslint ./src --fix",
     "lint": "npx eslint ./src",
+    "test": "npm run build --silent && node spec/run.mjs",
     "rollup": "npx rollup -c .config/rollup.config.js",
     "zip": "zip -j dist/svg.panzoom.js.zip -- LICENSE README.md dist/svg.panzoom.js dist/svg.panzoom.js.map dist/svg.panzoom.min.js dist/svg.panzoom.min.js.map",
     "prepublishOnly": "rm -rf ./dist && npm run build --silent",
@@ -66,6 +67,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^5.2.0",
     "rollup-plugin-uglify": "^6.0.4",
-    "rollup-plugin-uglify-es": "0.0.1"
+    "rollup-plugin-uglify-es": "0.0.1",
+    "svgdom": "0.0.21"
   }
 }

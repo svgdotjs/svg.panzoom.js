@@ -20,6 +20,7 @@ extend(Svg, {
     const panButton = options.panButton ?? 0
     const oneFingerPan = options.oneFingerPan ?? false
     const margins = options.margins ?? false
+    const ignoreTextElements = options.ignoreTextElements ?? false
     const wheelZoomDeltaModeLinePixels = options.wheelZoomDeltaModeLinePixels ?? 17
     const wheelZoomDeltaModeScreenPixels = options.wheelZoomDeltaModeScreenPixels ?? 53
 
@@ -175,6 +176,8 @@ extend(Svg, {
         const box = restrictToMargins(this.viewbox())
         this.viewbox(box)
       }
+
+      this.dispatch('afterZoom', { box: this.viewbox(), focus: p })
     }
 
     const pinchZoomStart = function (ev) {
@@ -291,6 +294,19 @@ extend(Svg, {
       lastTouches = currentTouches
 
       this.dispatch('zoom', { box: box, focus: focusP })
+      this.dispatch('afterZoom', { box: this.viewbox(), focus: focusP })
+    }
+
+    const isTextElement = ev => {
+      let node = ev.target
+      while (node && node !== this.node) {
+        const name = (node.localName || node.nodeName || '').toLowerCase()
+        if (name === 'text' || name === 'tspan' || name === 'textpath') {
+          return true
+        }
+        node = node.parentElement || node.parentNode
+      }
+      return false
     }
 
     const panStart = function (ev) {
@@ -298,6 +314,10 @@ extend(Svg, {
 
       // In case panStart is called with touch, ev.button is undefined
       if (isMouse && ev.button !== panButton && ev.which !== panButton + 1) {
+        return
+      }
+
+      if (ignoreTextElements && isTextElement(ev)) {
         return
       }
 

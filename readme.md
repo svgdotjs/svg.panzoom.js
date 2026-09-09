@@ -79,6 +79,7 @@ You can override the default options by passing an object in to the `.panZoom({o
 | wheelZoom    | true             | Enable mouse wheel zoom                                                                                        |
 | panButton    | 0                | Which mouse button to use for pan ([info](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button)) |
 | oneFingerPan | false            | Enables the ability to pan with only one finger instead of two for touchdevices                                |
+| ignoreTextElements | false      | Ignore mousedown events that originate from a `text`, `tspan` or `textPath` element so they can be selected and copied |
 | margins      | false            | An object {top, left, right, bottom} to restrict the pan area towards this side so that at least x user units of the opposite side are still visible |
 | zoomFactor   | 2                | How quickly to zoom when using `wheelZoom`                                                                   |
 | zoomMin      | Number.MIN_VALUE | The minimum zoom level                                                                                         |
@@ -104,7 +105,8 @@ Multiple events are fired doing different actions. This allow you to respond
 to actions and in some cases stop an action via `preventDefault()`.
 
 `zoom` is fired when a mouse wheel event or pinchZoom triggers
-a zoom.
+a zoom. `afterZoom` is fired right after the new viewbox was
+applied and carries the resulting box.
 
 Events fired from SVG.js are [`CustomEvent`s](http://devdocs.io/dom/customevent),
 so the arguments passed from svg.panzoom.js are in in the `.detail` property.
@@ -112,6 +114,7 @@ so the arguments passed from svg.panzoom.js are in in the `.detail` property.
 | Event Name     | Argument Value       | preventDefault support |
 | -------------- | -------------------- | ---------------------- |
 | zoom           | `{ lvl/box, focus }` | YES                    |
+| afterZoom      | `{ box, focus }`     | NO                     |
 | panStart       | `{ event }`          | NO                     |
 | panEnd         | `{ event }`          | NO                     |
 | panning        | `{ box }`            | YES                    |

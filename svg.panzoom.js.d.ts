@@ -20,6 +20,7 @@ interface options {
   panButton?: MouseButton
   oneFingerPan?: boolean
   margins?: boolean | marginOptions
+  ignoreTextElements?: boolean
   zoomFactor?: number
   zoomMin?: number
   zoomMax?: number
