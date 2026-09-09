@@ -334,15 +334,18 @@ extend(Svg, {
         return
       }
 
-      ev.preventDefault()
-
-      this.off('mousedown.panZoom', panStart)
-
       lastTouches = normalizeEvent(ev)
 
       if (zoomInProgress) return
 
-      this.dispatch('panStart', { event: ev })
+      // panStart is cancelable and goes out before the default is prevented,
+      // so a handler can hand the event back to the browser by calling
+      // preventDefault() - which is how you keep text selectable, for example
+      if (this.dispatch('panStart', { event: ev }).defaultPrevented) return
+
+      ev.preventDefault()
+
+      this.off('mousedown.panZoom', panStart)
 
       lastP = { x: lastTouches[0].clientX, y: lastTouches[0].clientY }
 
