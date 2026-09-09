@@ -1,3 +1,5 @@
+import { Box } from '@svgdotjs/svg.js'
+
 export enum MouseButton {
   left = 0,
   middle,
@@ -25,6 +27,13 @@ export interface PanZoomOptions {
   zoomMax?: number
   wheelZoomDeltaModeLinePixels?: number
   wheelZoomDeltaModeScreenPixels?: number
+}
+
+// payload of the `afterZoom` event: the box which was just applied and the
+// point which was zoomed into
+export interface AfterZoomEventDetail {
+  box: Box
+  focus: { x: number; y: number }
 }
 
 declare module '@svgdotjs/svg.js' {

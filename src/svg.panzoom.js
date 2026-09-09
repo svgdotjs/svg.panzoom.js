@@ -208,6 +208,8 @@ extend(Svg, {
         const box = restrictToMargins(this.viewbox())
         this.viewbox(box)
       }
+
+      this.dispatch('afterZoom', { box: this.viewbox(), focus: p })
     }
 
     const pinchZoomStart = function (ev) {
@@ -324,6 +326,7 @@ extend(Svg, {
       lastTouches = currentTouches
 
       this.dispatch('zoom', { box: box, focus: focusP })
+      this.dispatch('afterZoom', { box: this.viewbox(), focus: focusP })
     }
 
     const panStart = function (ev) {

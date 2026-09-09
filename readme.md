@@ -113,7 +113,8 @@ Multiple events are fired doing different actions. This allow you to respond
 to actions and in some cases stop an action via `preventDefault()`.
 
 `zoom` is fired when a mouse wheel event or pinchZoom triggers
-a zoom.
+a zoom. `afterZoom` is fired right after the new viewbox was
+applied and carries the resulting box.
 
 Events fired from SVG.js are [`CustomEvent`s](http://devdocs.io/dom/customevent),
 so the arguments passed from svg.panzoom.js are in in the `.detail` property.
@@ -121,6 +122,7 @@ so the arguments passed from svg.panzoom.js are in in the `.detail` property.
 | Event Name     | Argument Value       | preventDefault support |
 | -------------- | -------------------- | ---------------------- |
 | zoom           | `{ lvl/box, focus }` | YES                    |
+| afterZoom      | `{ box, focus }`     | NO                     |
 | panStart       | `{ event }`          | YES                    |
 | panEnd         | `{ event }`          | NO                     |
 | panning        | `{ box }`            | YES                    |

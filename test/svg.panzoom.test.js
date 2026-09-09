@@ -125,3 +125,88 @@ describe('panStart', () => {
     stopPan()
   })
 })
+
+describe('afterZoom', () => {
+  const wheel = (extra = {}) => ({
+    type: 'wheel',
+    deltaY: 120,
+    deltaMode: 0,
+    clientX: 500,
+    clientY: 500,
+    preventDefault() {},
+    ...extra
+  })
+
+  it('is dispatched after the cancelable zoom event', () => {
+    const svg = makeSvg()
+    const order = []
+    let detail
+    svg.on('zoom', () => order.push('zoom'))
+    svg.on('afterZoom', (ev) => {
+      order.push('afterZoom')
+      detail = ev.detail
+    })
+
+    fireOn(svg, wheel())
+
+    assert.deepStrictEqual(order, ['zoom', 'afterZoom'])
+    assert.strictEqual(detail.box.toString(), svg.viewbox().toString())
+    assert.notStrictEqual(detail.box.width, 1000)
+  })
+
+  it('is not dispatched when the zoom event was prevented', () => {
+    const svg = makeSvg()
+    let dispatched = false
+    svg.on('zoom', (ev) => ev.preventDefault())
+    svg.on('afterZoom', () => {
+      dispatched = true
+    })
+
+    fireOn(svg, wheel())
+
+    assert.strictEqual(dispatched, false)
+    assert.strictEqual(svg.viewbox().width, 1000)
+  })
+
+  it('carries the viewbox as restricted by the margins', () => {
+    const svg = makeSvg({
+      margins: { top: 100, left: 100, right: 100, bottom: 100 }
+    })
+    svg.node.preserveAspectRatio = { baseVal: { align: 1, meetOrSlice: 0 } }
+    let detail
+    svg.on('afterZoom', (ev) => {
+      detail = ev.detail
+    })
+
+    fireOn(svg, wheel())
+
+    assert.strictEqual(detail.box.toString(), svg.viewbox().toString())
+  })
+
+  it('is dispatched for pinch zoom as well', () => {
+    const svg = makeSvg()
+    let detail
+    svg.on('afterZoom', (ev) => {
+      detail = ev.detail
+    })
+
+    fireOn(svg, {
+      type: 'touchstart',
+      touches: [
+        { clientX: 100, clientY: 100 },
+        { clientX: 200, clientY: 200 }
+      ],
+      preventDefault() {}
+    })
+    fireOnDocument({
+      type: 'touchmove',
+      touches: [
+        { clientX: 110, clientY: 110 },
+        { clientX: 210, clientY: 210 }
+      ],
+      preventDefault() {}
+    })
+
+    assert.strictEqual(detail.box.toString(), svg.viewbox().toString())
+  })
+})
