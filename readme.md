@@ -121,23 +121,22 @@ so the arguments passed from svg.panzoom.js are in in the `.detail` property.
 | Event Name     | Argument Value       | preventDefault support |
 | -------------- | -------------------- | ---------------------- |
 | zoom           | `{ lvl/box, focus }` | YES                    |
-| panStart       | `{ event }`          | NO                     |
+| panStart       | `{ event }`          | YES                    |
 | panEnd         | `{ event }`          | NO                     |
 | panning        | `{ box }`            | YES                    |
 | pinchZoomStart | `{ event }`          | YES                    |
 | pinchZoomEnd   | `{ event }`          | NO                     |
 
-Where `lvl` is the new zoom level,
-[`focus`](https://svgjs.com/docs/3.0/classes/#svg-point) is the point that is zoomed into, [`box`](https://svgjs.com/docs/3.0/classes/#svg-box) is the new calculated viewbox
-and event is the event that triggered the action.
-
-An example of stopping a pinch-zoom action:
+`panStart` is dispatched before the mousedown/touchstart default is prevented,
+so cancelling it hands the event back to the browser. That is how you keep
+parts of the drawing interactive - text stays selectable if you refuse to pan
+when the pointer went down on it:
 
 ```js
-var canvas = SVG().addTo('#id').size(1000, 1000).panZoom()
-
-canvas.on('pinchZoomStart', function (ev) {
-  ev.preventDefault()
-  // ...
+canvas.on('panStart', (e) => {
+  const name = e.detail.event.target.nodeName
+  if (name === 'text' || name === 'tspan' || name === 'textPath') {
+    e.preventDefault()
+  }
 })
 ```

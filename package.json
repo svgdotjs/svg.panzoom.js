@@ -47,7 +47,8 @@
     "fix": "oxfmt --write . && oxlint -D correctness --fix .",
     "lint": "oxfmt --check . && oxlint -D correctness .",
     "prepublishOnly": "rm -rf ./dist && pnpm build && pnpm zip",
-    "zip": "zip -j dist/svg.panzoom.js.zip -- license readme.md dist/svg.panzoom.js"
+    "zip": "zip -j dist/svg.panzoom.js.zip -- license readme.md dist/svg.panzoom.js",
+    "test": "node --test test/*.test.js"
   },
   "peerDependencies": {
     "@svgdotjs/svg.js": "^3.1.0"
@@ -56,6 +57,7 @@
     "@svgdotjs/svg.js": "^3.2.8",
     "oxfmt": "^0.67.0",
     "oxlint": "^1.82.0",
+    "svgdom": "^0.1.28",
     "typescript": "^7.0.2",
     "vite": "^8.2.2"
   }
