@@ -1,10 +1,10 @@
 import { Svg, on, off, extend, Matrix, Box } from '@svgdotjs/svg.js'
 
-const normalizeEvent = ev =>
+const normalizeEvent = (ev) =>
   ev.touches || [{ clientX: ev.clientX, clientY: ev.clientY }]
 
 extend(Svg, {
-  panZoom (options) {
+  panZoom(options) {
     this.off('.panZoom')
 
     // when called with false, disable panZoom
@@ -20,8 +20,10 @@ extend(Svg, {
     const panButton = options.panButton ?? 0
     const oneFingerPan = options.oneFingerPan ?? false
     const margins = options.margins ?? false
-    const wheelZoomDeltaModeLinePixels = options.wheelZoomDeltaModeLinePixels ?? 17
-    const wheelZoomDeltaModeScreenPixels = options.wheelZoomDeltaModeScreenPixels ?? 53
+    const wheelZoomDeltaModeLinePixels =
+      options.wheelZoomDeltaModeLinePixels ?? 17
+    const wheelZoomDeltaModeScreenPixels =
+      options.wheelZoomDeltaModeScreenPixels ?? 53
 
     let lastP
     let lastTouches
@@ -29,7 +31,7 @@ extend(Svg, {
 
     const viewbox = this.viewbox()
 
-    const restrictToMargins = box => {
+    const restrictToMargins = (box) => {
       if (!margins) return box
       const { top, left, bottom, right } = margins
 
@@ -46,14 +48,20 @@ extend(Svg, {
       let viewportBottomOffset = 0
 
       // preserveAspectRatio none has no offsets
-      if (preserveAspectRatio.align !== preserveAspectRatio.SVG_PRESERVEASPECTRATIO_NONE) {
+      if (
+        preserveAspectRatio.align !==
+        preserveAspectRatio.SVG_PRESERVEASPECTRATIO_NONE
+      ) {
         const svgAspectRatio = width / height
         const viewboxAspectRatio = viewbox.width / viewbox.height
         // when aspectRatios are the same, there are no offsets
         if (viewboxAspectRatio !== svgAspectRatio) {
           // aspectRatio unknown is like meet because that's the default
-          const isMeet = preserveAspectRatio.meetOrSlice !== preserveAspectRatio.SVG_MEETORSLICE_SLICE
-          const changedAxis = svgAspectRatio > viewboxAspectRatio ? 'width' : 'height'
+          const isMeet =
+            preserveAspectRatio.meetOrSlice !==
+            preserveAspectRatio.SVG_MEETORSLICE_SLICE
+          const changedAxis =
+            svgAspectRatio > viewboxAspectRatio ? 'width' : 'height'
           const isWidth = changedAxis === 'width'
           const changeHorizontal = (isMeet && isWidth) || (!isMeet && !isWidth)
           const ratio = changeHorizontal
@@ -63,42 +71,65 @@ extend(Svg, {
           const offset = box[changedAxis] - box[changedAxis] * ratio
           if (changeHorizontal) {
             if (
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX) {
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX
+            ) {
               viewportLeftOffset = offset / 2
               viewportRightOffset = -offset / 2
             } else if (
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX) {
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX
+            ) {
               viewportRightOffset = -offset
             } else if (
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX
+            ) {
               viewportLeftOffset = offset
             }
           } else {
             if (
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID) {
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMID ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMID
+            ) {
               viewportTopOffset = offset / 2
               viewportBottomOffset = -offset / 2
             } else if (
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN) {
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMIN ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMIN ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMIN
+            ) {
               viewportBottomOffset = -offset
             } else if (
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX ||
-              preserveAspectRatio.align === preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX) {
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMIDYMAX ||
+              preserveAspectRatio.align ===
+                preserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMAXYMAX
+            ) {
               viewportTopOffset = offset
             }
           }
-
         }
       }
 
@@ -142,19 +173,21 @@ extend(Svg, {
       // Normalize everything so that zooming speed is approximately the same in all cases
       let normalizedPixelDeltaY
       switch (ev.deltaMode) {
-      case 1:
-        normalizedPixelDeltaY = ev.deltaY * wheelZoomDeltaModeLinePixels
-        break
-      case 2:
-        normalizedPixelDeltaY = ev.deltaY * wheelZoomDeltaModeScreenPixels
-        break
-      default:
-        // 0 (already pixels) or new mode (avoid crashing)
-        normalizedPixelDeltaY = ev.deltaY
-        break
+        case 1:
+          normalizedPixelDeltaY = ev.deltaY * wheelZoomDeltaModeLinePixels
+          break
+        case 2:
+          normalizedPixelDeltaY = ev.deltaY * wheelZoomDeltaModeScreenPixels
+          break
+        default:
+          // 0 (already pixels) or new mode (avoid crashing)
+          normalizedPixelDeltaY = ev.deltaY
+          break
       }
 
-      let lvl = Math.pow(1 + zoomFactor, (-1 * normalizedPixelDeltaY) / 100) * this.zoom()
+      let lvl =
+        Math.pow(1 + zoomFactor, (-1 * normalizedPixelDeltaY) / 100) *
+        this.zoom()
       const p = this.point(ev.clientX, ev.clientY)
 
       if (lvl > zoomMax) {
