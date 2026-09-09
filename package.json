@@ -1,73 +1,65 @@
 {
   "name": "@svgdotjs/svg.panzoom.js",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "A plugin for svg.js that enables panzoom for viewport elements",
+  "type": "module",
   "main": "dist/svg.panzoom.js",
-  "unpkg": "dist/svg.panzoom.min.js",
-  "jsdelivr": "dist/svg.panzoom.min.js",
-  "browser": "dist/svg.panzoom.esm.js",
   "module": "src/svg.panzoom.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./svg.panzoom.js.d.ts",
+        "default": "./src/svg.panzoom.js"
+      },
+      "require": {
+        "types": "./svg.panzoom.js.d.cts",
+        "default": "./src/svg.panzoom.js"
+      },
+      "browser": {
+        "types": "./svg.panzoom.js.d.ts",
+        "default": "./src/svg.panzoom.js"
+      }
+    }
+  },
+  "unpkg": "dist/svg.panzoom.js",
+  "jsdelivr": "dist/svg.panzoom.js",
   "files": [
     "/dist",
     "/src",
-    "/svg.panzoom.js.d.ts"
+    "/svg.panzoom.js.d.ts",
+    "/svg.panzoom.js.d.cts"
   ],
-  "scripts": {
-    "build": "npm run fix && npm run rollup --silent",
-    "fix": "npx eslint ./src --fix",
-    "lint": "npx eslint ./src",
-    "test": "npm run build --silent && node spec/run.mjs",
-    "rollup": "npx rollup -c .config/rollup.config.js",
-    "zip": "zip -j dist/svg.panzoom.js.zip -- LICENSE README.md dist/svg.panzoom.js dist/svg.panzoom.js.map dist/svg.panzoom.min.js dist/svg.panzoom.min.js.map",
-    "prepublishOnly": "rm -rf ./dist && npm run build --silent",
-    "postpublish": "npm run zip --silent",
-    "format": "prettier-standard --format"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/svgdotjs/svg.panzoom.js.git"
-  },
   "keywords": [
     "svg.js",
     "panzoom"
   ],
-  "author": "Ulrich-Matthias Schäfer",
+  "bugs": "https://github.com/svgdotjs/svg.panzoom.js/issues",
   "license": "MIT",
   "typings": "./svg.panzoom.js.d.ts",
-  "bugs": {
-    "url": "https://github.com/svgdotjs/svg.panzoom.js/issues"
-  },
+  "author": "Ulrich-Matthias Schäfer",
   "homepage": "https://github.com/svgdotjs/svg.panzoom.js#readme",
-  "dependencies": {
-    "@svgdotjs/svg.js": "^3.0.16"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/svgdotjs/svg.panzoom.js.git"
+  },
+  "scripts": {
+    "build": "npm run fix && vite build",
+    "fix": "npx eslint --fix",
+    "lint": "npx eslint .",
+    "prepublishOnly": "rm -rf ./dist && npm run build",
+    "test": "node spec/run.mjs"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.4",
-    "@babel/plugin-external-helpers": "^7.8.3",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
-    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.8.3",
-    "@babel/polyfill": "^7.8.3",
-    "@babel/preset-env": "^7.8.4",
-    "@babel/runtime": "^7.8.4",
-    "@babel/runtime-corejs3": "^7.8.4",
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.8.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "prettier-standard": "^16.1.0",
-    "rollup": "^1.31.1",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-filesize": "^6.2.1",
-    "rollup-plugin-multi-entry": "^2.1.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^5.2.0",
-    "rollup-plugin-uglify": "^6.0.4",
-    "rollup-plugin-uglify-es": "0.0.1",
-    "svgdom": "0.0.21"
+    "@svgdotjs/svg.js": "^3.2.4",
+    "eslint": "^8.36.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.5",
+    "svgdom": "0.0.21",
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1"
+  },
+  "peerDependencies": {
+    "@svgdotjs/svg.js": "^3.2.4"
   }
 }
